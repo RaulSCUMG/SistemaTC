@@ -20,6 +20,7 @@ public partial class AutoMapperProfile
             .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.User));
         CreateMap<Entity, EntityDTO>()
             .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.UpdatedBy ?? src.CreatedBy))
+            .ForMember(dest => dest.Password, opt => opt.MapFrom(src => string.Empty))
             .ReverseMap();
     }
 }
