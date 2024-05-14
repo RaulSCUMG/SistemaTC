@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
 
 namespace SistemaTC.Core.Extensions;
 public static class ObjectExtension
