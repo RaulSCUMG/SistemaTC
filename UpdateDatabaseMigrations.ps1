@@ -1,0 +1,1 @@
+Update-Database -StartUpProject SistemaTC.Api -Project SistemaTC.Data -context TCContext
