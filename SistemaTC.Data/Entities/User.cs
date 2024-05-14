@@ -11,7 +11,7 @@ public class User: Auditable
     public string Phone { get; set; } = string.Empty;
     public bool Active { get; set; }
 
-    public Role Role { get; set; } = new();
+    public Role Role { get; set; } = default!;
     public ICollection<CreditCard> CreditCards { get; set; } = new HashSet<CreditCard>();
     public ICollection<CreditCardTransaction> CreditCardTransactions { get; set; } = new HashSet<CreditCardTransaction>();
     public ICollection<CreditCutOff> CreditCutOffs { get; set; } = new HashSet<CreditCutOff>();

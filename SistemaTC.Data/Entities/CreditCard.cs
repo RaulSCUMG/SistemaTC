@@ -20,7 +20,7 @@ public class CreditCard: Auditable
     public bool Locked { get; set; }
     public DateTime? LockedDate { get; set; }
 
-    public User Owner { get; set; } = new();
+    public User Owner { get; set; } = default!;
     public ICollection<CreditCardTransaction> CreditCardTransactions { get; set; } = new HashSet<CreditCardTransaction>();
     public ICollection<CreditCutOff> CreditCutOffs { get; set; } = new HashSet<CreditCutOff>();
     public ICollection<Payment> Payments { get; set; } = new HashSet<Payment>();

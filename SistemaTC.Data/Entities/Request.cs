@@ -12,6 +12,6 @@ public class Request: Auditable
     public bool Approved { get; set; }
     public string InternalNote { get; set; } = string.Empty;
 
-    public User RequestedBy { get; set; } = new();
-    public User AssignedTo { get; set; } = new();
+    public User RequestedBy { get; set; } = default!;
+    public User AssignedTo { get; set; } = default!;
 }
