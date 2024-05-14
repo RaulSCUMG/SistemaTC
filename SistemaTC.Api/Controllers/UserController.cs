@@ -104,7 +104,34 @@ public class UserController(ILogger<UserController> logger, IMapper mapper, IUse
         catch (Exception e)
         {
             var message = e.GetLastException();
-            logger.LogError("Error produced on getting users. Error: {message}", message);
+            logger.LogError("Error produced while creating the user. Error: {message}", message);
+            return StatusCode((int)HttpStatusCode.InternalServerError, message);
+        }
+    }
+
+    [HttpPut("")]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(User))]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
+    [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
+    public async Task<ActionResult<User?>> Update([FromBody] ExistingUser user)
+    {
+        try
+        {
+            logger.LogInformation("Updating user {UserId}...", user.UserId);
+
+            var (entity, serviceValidationResult) = await userService.UpdateAsync(mapper.Map<Data.Entities.User>(user));
+
+            if (serviceValidationResult.Count is not 0)
+                return StatusCode((int)HttpStatusCode.UnprocessableContent, serviceValidationResult);
+
+            var data = mapper.Map<User>(entity);
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            var message = e.GetLastException();
+            logger.LogError("Error produced while updating the user. Error: {message}", message);
             return StatusCode((int)HttpStatusCode.InternalServerError, message);
         }
     }
