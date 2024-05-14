@@ -46,6 +46,36 @@ public class UserService(ITCContext dbContext) : IUserService
         return (user, []);
     }
 
+    public async Task<(User? user, List<string> validationErrors)> UpdateAsync(User user)
+    {
+        var validationErrors = await ValidateUser(user, false).ToListAsync();
+
+        if (validationErrors.Count is not 0)
+        {
+            return (null, validationErrors);
+        }
+
+        var entity = await dbContext.Users.FirstOrDefaultAsync(x => x.UserId == user.UserId);
+
+        if (entity is null)
+            return (null, ["User doesn't exist"]);
+
+        entity.RoleId = user.RoleId;
+        entity.Email = user.Email;
+        entity.FirstName = user.FirstName;
+        entity.LastName = user.LastName;
+        entity.Phone = user.Phone;
+        entity.Updated = user.Updated;
+        entity.UpdatedBy = user.UpdatedBy;
+
+        if (!string.IsNullOrEmpty(user.Password))
+            entity.Password = user.Password.Hash();
+
+        await dbContext.SaveChangesAsync();
+
+        return (entity, []);
+    }
+
     private async IAsyncEnumerable<string> ValidateUser(User user, bool newUser = true)
     {
         var existingUserCondition = dbContext.Users.Where(x => x.UserName == user.UserName);
@@ -56,6 +86,11 @@ public class UserService(ITCContext dbContext) : IUserService
         if (await existingUserCondition.AnyAsync(x => x.UserName == user.UserName))
         {
             yield return "Username already exists";
+        }
+
+        if(!await dbContext.Roles.AnyAsync(x => x.RoleId == user.RoleId))
+        {
+            yield return "Role doesn't exist";
         }
     }
 }
