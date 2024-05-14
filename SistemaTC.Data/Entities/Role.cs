@@ -6,6 +6,6 @@ public class Role : Auditable
     public string Code { get; set; } = string.Empty;
     public bool Active { get; set; }
 
-    public ICollection<Permission> Permissions { get; set;} = new HashSet<Permission>();
+    public ICollection<RolePermission> Permissions { get; set;} = new HashSet<RolePermission>();
     public ICollection<User> Users { get; set; } = new HashSet<User>();
 }

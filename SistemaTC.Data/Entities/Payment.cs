@@ -11,7 +11,7 @@ public class Payment: Auditable
     public PaymentType Type { get; set; }
     public decimal Amount { get; set; }
 
-    public User Owner { get; set; } = new();
-    public CreditCard CreditCard { get; set; } = new();
-    public CreditCutOff CreditCutOff { get; set; } = new();
+    public User Owner { get; set; } = default!;
+    public CreditCard CreditCard { get; set; } = default!;
+    public CreditCutOff CreditCutOff { get; set; } = default!;
 }

@@ -6,5 +6,5 @@ public class UserToken : Auditable
     public string Token { get; set;} = string.Empty;
     public DateTime ExpirationDate { get; set; }
     public bool Active { get; set; }
-    public User User { get; set; } = new();
+    public User User { get; set; } = default!;
 }

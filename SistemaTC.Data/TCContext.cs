@@ -13,6 +13,7 @@ public class TCContext(DbContextOptions options) : DbContext(options), ITCContex
     public virtual DbSet<Permission> Permissions { get; set; }
     public virtual DbSet<Request> Requests { get; set; }
     public virtual DbSet<Role> Roles { get; set; }
+    public virtual DbSet<RolePermission> RolePermissions { get; set; }
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<UserToken> UserTokens { get; set; }
 
@@ -124,6 +125,8 @@ public class TCContext(DbContextOptions options) : DbContext(options), ITCContex
 
             entity.HasIndex(x => x.Code);
             entity.HasIndex(x => x.Active);
+
+            entity.HasMany(x => x.Roles).WithOne(x => x.Permission).HasForeignKey(x => x.PermissionId);
         });
 
         modelBuilder.Entity<Request>(entity =>
@@ -159,12 +162,17 @@ public class TCContext(DbContextOptions options) : DbContext(options), ITCContex
             entity.HasIndex(x => x.Code);
             entity.HasIndex(x => x.Active);
 
-            entity.HasMany(x => x.Permissions).WithMany(x => x.Roles).UsingEntity("RolePermission",
-                    l => l.HasOne(typeof(Permission)).WithMany().HasForeignKey(nameof(Permission.PermissionId)).HasPrincipalKey(nameof(Permission.PermissionId)),
-                    r => r.HasOne(typeof(Role)).WithMany().HasForeignKey(nameof(Role.RoleId)).HasPrincipalKey(nameof(Role.RoleId)),
-                    j => j.HasKey(nameof(Role.RoleId), nameof(Permission.PermissionId))
-                );
             entity.HasMany(x => x.Users).WithOne(x => x.Role).HasForeignKey(x => x.RoleId);
+            entity.HasMany(x => x.Permissions).WithOne(x => x.Role).HasForeignKey(x => x.RoleId);
+        });
+
+        modelBuilder.Entity<RolePermission>(entity =>
+        {
+            entity.ToTable(nameof(RolePermission));
+            entity.HasKey(x => new { x.RoleId, x.PermissionId });
+
+            entity.HasIndex(x => x.RoleId);
+            entity.HasIndex(x => x.PermissionId);
         });
 
         modelBuilder.Entity<User>(entity =>

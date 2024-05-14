@@ -15,8 +15,8 @@ public class CreditCutOff: Auditable
     public bool Payed { get; set; }
     public bool Closed { get; set; }
 
-    public User Owner { get; set; } = new();
-    public CreditCard CreditCard { get; set; } = new();
+    public User Owner { get; set; } = default!;
+    public CreditCard CreditCard { get; set; } = default!;
     public ICollection<CreditCardTransaction> CreditCardTransactions { get; set; } = new HashSet<CreditCardTransaction>();
     public ICollection<Payment> Payments { get; set; } = new HashSet<Payment>();
 }
