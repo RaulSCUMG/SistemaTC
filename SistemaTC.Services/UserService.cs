@@ -76,6 +76,22 @@ public class UserService(ITCContext dbContext) : IUserService
         return (entity, []);
     }
 
+    public async Task<(User? user, List<string> validationErrors)> InactivateAsync(Guid userId, bool active, string requestedBy)
+    {
+        var entity = await dbContext.Users.FirstOrDefaultAsync(x => x.UserId == userId);
+
+        if (entity is null)
+            return (null, ["User doesn't exist"]);
+
+        entity.Active = active;
+        entity.Updated = DateTime.UtcNow;
+        entity.UpdatedBy = requestedBy;
+
+        await dbContext.SaveChangesAsync();
+
+        return (entity, []);
+    }
+
     private async IAsyncEnumerable<string> ValidateUser(User user, bool newUser = true)
     {
         var existingUserCondition = dbContext.Users.Where(x => x.UserName == user.UserName);

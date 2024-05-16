@@ -8,4 +8,5 @@ public interface IUserService
     Task<User?> GetUserAsync(string userName, string password);
     Task<(User? user, List<string> validationErrors)> AddAsync(User user);
     Task<(User? user, List<string> validationErrors)> UpdateAsync(User user);
+    Task<(User? user, List<string> validationErrors)> InactivateAsync(Guid userId, bool active, string requestedBy);
 }
