@@ -44,8 +44,8 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
         DateOnly fechaActual = DateOnly.FromDateTime(DateTime.Today);
         creditCard.ExpirationDate = fechaActual.AddYears(2).AddMonths(6);
         creditCard.Expired = false;
-        creditCard.Pin = GenerarNumeroAleatorioTarjeta(1000, 9999);
-        creditCard.Ccv = GenerarNumeroAleatorioTarjeta(100, 999);
+        creditCard.Pin = (GenerarNumeroAleatorioTarjeta(1000, 9999)).Hash();
+        creditCard.Ccv = GenerarNumeroAleatorioTarjeta(100, 999).Hash();
         creditCard.CreditLimit = 5000;
         creditCard.CreditAvailable = 5000;
         creditCard.ChargeRate = 36;
