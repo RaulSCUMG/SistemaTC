@@ -131,7 +131,42 @@ public class UserController(ILogger<UserController> logger, IMapper mapper, IUse
         catch (Exception e)
         {
             var message = e.GetLastException();
-            logger.LogError("Error produced while updating the user. Error: {message}", message);
+            logger.LogError("Error produced while updating user {userId}. Error: {message}", user.UserId, message);
+            return StatusCode((int)HttpStatusCode.InternalServerError, message);
+        }
+    }
+
+    [HttpPatch("{userId}/Active")]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(User))]
+    [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
+    public async Task<ActionResult<User?>> Inactivate(Guid userId, bool? active, string requestedBy)
+    {
+        try
+        {
+            var validationErrors = new List<string>();
+
+            if (userId == Guid.Empty) validationErrors.Add("User Id is required");
+            if (!active.HasValue) validationErrors.Add("Active parameter is required");
+            if (string.IsNullOrEmpty(requestedBy)) validationErrors.Add("Requested By parameter is required");
+
+            if(validationErrors.Count is not 0)
+                return StatusCode((int)HttpStatusCode.UnprocessableContent, validationErrors);
+
+            logger.LogInformation("Activating/Inactivating user {UserId}...", userId);
+
+            var (entity, serviceValidationResult) = await userService.InactivateAsync(userId, active.Value, requestedBy);
+
+            if (serviceValidationResult.Count is not 0)
+                return StatusCode((int)HttpStatusCode.UnprocessableContent, serviceValidationResult);
+
+            var data = mapper.Map<User>(entity);
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            var message = e.GetLastException();
+            logger.LogError("Error produced while activating/inactivating user {userId}. Error: {message}", userId, message);
             return StatusCode((int)HttpStatusCode.InternalServerError, message);
         }
     }
