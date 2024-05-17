@@ -4,6 +4,9 @@ using ExistingDTOPin = SistemaTC.DTO.CreditCard.ExistingCreditCardPin;
 using ExistingDTOBloqueo = SistemaTC.DTO.CreditCard.ExistingCreditCardPin;
 using ExistingDTOAumento = SistemaTC.DTO.CreditCard.ExistingCreditCardPin;
 using NewDTO = SistemaTC.DTO.CreditCard.CreditCardNew;
+using ResponseDTOSaldos = SistemaTC.DTO.CreditCard.CreditCardResponseSaldo;
+using ResponseDTOFecha = SistemaTC.DTO.CreditCard.CreditCardResponseFecha;
+using ResponseDTODetalle = SistemaTC.DTO.CreditCard.CreditCardResponseDetalle;
 
 namespace SistemaTC.Api.Profile;
 public partial class AutoMapperProfile
