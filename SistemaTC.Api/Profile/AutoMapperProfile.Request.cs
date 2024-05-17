@@ -18,12 +18,10 @@ namespace SistemaTC.Api.Profile
                 .ForMember(dest => dest.RequestedByUserId, opt => opt.MapFrom(src => src.UserId));
             CreateMap<Entity, UpdateDTO>()
                 .ReverseMap()
-                .ForMember(dest => dest.Updated, opt => opt.MapFrom(src => DateTime.UtcNow))
-                .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.User));
+                .ForMember(dest => dest.Updated, opt => opt.MapFrom(src => DateTime.UtcNow));
             CreateMap<TC_Entity, NewCreditCardDTO>()
                 .ReverseMap()
-                .ForMember(dest => dest.Updated, opt => opt.MapFrom(src => DateTime.UtcNow))
-                .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.User));
+                .ForMember(dest => dest.Updated, opt => opt.MapFrom(src => DateTime.UtcNow));
             CreateMap<Entity, EntityDTO>()
                 .ReverseMap();
         }

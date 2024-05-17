@@ -25,9 +25,6 @@ public class RequestService(ITCContext dbContext) : IRequestService
             return (null, validationErrors);
         }
 
-        var user = await dbContext.Users.FirstAsync(x => x.UserId == request.RequestedByUserId);
-
-        request.CreatedBy = user.UserName;
         await dbContext.Requests.AddAsync(request);
         await dbContext.SaveChangesAsync();
 

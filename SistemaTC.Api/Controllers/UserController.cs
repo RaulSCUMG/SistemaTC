@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SistemaTC.Api.Filters;
 using SistemaTC.Core.Extensions;
@@ -12,7 +13,7 @@ using Permissions = SistemaTC.Core.General.Permissions;
 namespace SistemaTC.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class UserController(ILogger<UserController> logger, IMapper mapper, IUserService userService, ITokenService tokenService) : ControllerBase
+public class UserController(ILogger<UserController> logger, IMapper mapper, IUserService userService, ITokenService tokenService) : TCBaseController
 {
     [HttpGet("")]
     [PermissionAuthorization(Permissions.VIEW_USER)]
@@ -73,7 +74,10 @@ public class UserController(ILogger<UserController> logger, IMapper mapper, IUse
         {
             logger.LogInformation("Creating new user...");
 
-            var (entity, serviceValidationResult) = await userService.AddAsync(mapper.Map<Data.Entities.User>(user));
+            var requestData = mapper.Map<Data.Entities.User>(user);
+            requestData.CreatedBy = LoggedInUser.UserName!;
+
+            var (entity, serviceValidationResult) = await userService.AddAsync(requestData);
 
             if(serviceValidationResult.Count is not 0)
                 return StatusCode((int)HttpStatusCode.UnprocessableContent, serviceValidationResult);
@@ -101,7 +105,10 @@ public class UserController(ILogger<UserController> logger, IMapper mapper, IUse
         {
             logger.LogInformation("Updating user {UserId}...", user.UserId);
 
-            var (entity, serviceValidationResult) = await userService.UpdateAsync(mapper.Map<Data.Entities.User>(user));
+            var requestData = mapper.Map<Data.Entities.User>(user);
+            requestData.UpdatedBy = LoggedInUser.UserName!;
+
+            var (entity, serviceValidationResult) = await userService.UpdateAsync(requestData);
 
             if (serviceValidationResult.Count is not 0)
                 return StatusCode((int)HttpStatusCode.UnprocessableContent, serviceValidationResult);
@@ -122,7 +129,7 @@ public class UserController(ILogger<UserController> logger, IMapper mapper, IUse
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(User))]
     [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
-    public async Task<ActionResult<User?>> Inactivate(Guid userId, bool? active, string requestedBy)
+    public async Task<ActionResult<User?>> Inactivate(Guid userId, bool? active)
     {
         try
         {
@@ -130,14 +137,13 @@ public class UserController(ILogger<UserController> logger, IMapper mapper, IUse
 
             if (userId == Guid.Empty) validationErrors.Add("User Id is required");
             if (!active.HasValue) validationErrors.Add("Active parameter is required");
-            if (string.IsNullOrEmpty(requestedBy)) validationErrors.Add("Requested By parameter is required");
 
             if(validationErrors.Count is not 0)
                 return StatusCode((int)HttpStatusCode.UnprocessableContent, validationErrors);
 
             logger.LogInformation("Activating/Inactivating user {UserId}...", userId);
 
-            var (entity, serviceValidationResult) = await userService.InactivateAsync(userId, active!.Value, requestedBy);
+            var (entity, serviceValidationResult) = await userService.InactivateAsync(userId, active!.Value, LoggedInUser.UserName!);
 
             if (serviceValidationResult.Count is not 0)
                 return StatusCode((int)HttpStatusCode.UnprocessableContent, serviceValidationResult);
@@ -154,6 +160,7 @@ public class UserController(ILogger<UserController> logger, IMapper mapper, IUse
     }
 
     [HttpPost("Login")]
+    [AllowAnonymous]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(AuthenticationResponse))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]

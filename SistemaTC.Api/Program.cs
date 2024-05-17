@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SistemaTC.Api.Filters;
+using SistemaTC.Api.Middleware;
 using SistemaTC.Api.Profile;
 using SistemaTC.Core;
 using SistemaTC.Data;
@@ -68,7 +69,7 @@ builder.Services.AddControllers().AddJsonOptions(opt =>
 });
 
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<LoggedInUser, IdentityRole>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<TCContext>();
 
@@ -116,6 +117,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseAuthorizationMiddleware();
 
 app.MapControllers();
 

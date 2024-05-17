@@ -12,14 +12,11 @@ public partial class AutoMapperProfile
         CreateMap<Entity, NewDTO>()
             .ReverseMap()
             .ForMember(dest => dest.Active, opt => opt.MapFrom(src => true))
-            .ForMember(dest => dest.Created, opt => opt.MapFrom(src => DateTime.UtcNow))
-            .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.User));
+            .ForMember(dest => dest.Created, opt => opt.MapFrom(src => DateTime.UtcNow));
         CreateMap<Entity, ExistingDTO>()
             .ReverseMap()
-            .ForMember(dest => dest.Updated, opt => opt.MapFrom(src => DateTime.UtcNow))
-            .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.User));
+            .ForMember(dest => dest.Updated, opt => opt.MapFrom(src => DateTime.UtcNow));
         CreateMap<Entity, EntityDTO>()
-            .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.UpdatedBy ?? src.CreatedBy))
             .ForMember(dest => dest.Password, opt => opt.MapFrom(src => "**********"))
             .ReverseMap();
     }

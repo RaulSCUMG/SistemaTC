@@ -9,7 +9,7 @@ using static SistemaTC.Core.General;
 namespace SistemaTC.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class NotificationController(ILogger<NotificationController> logger, INotificationService notificationService) : ControllerBase
+public class NotificationController(ILogger<NotificationController> logger, INotificationService notificationService) : TCBaseController
 {
     [HttpPost("email")]
     [PermissionAuthorization(Permissions.SEND_NOTIFICATION)]

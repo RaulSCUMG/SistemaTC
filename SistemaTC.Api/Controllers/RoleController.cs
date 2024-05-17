@@ -10,7 +10,7 @@ using Permissions = SistemaTC.Core.General.Permissions;
 namespace SistemaTC.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class RoleController(ILogger<RoleController> logger, IMapper mapper, IRoleService roleService) : ControllerBase
+public class RoleController(ILogger<RoleController> logger, IMapper mapper, IRoleService roleService) : TCBaseController
 {
     [HttpGet("")]
     [PermissionAuthorization(Permissions.VIEW_USER)]

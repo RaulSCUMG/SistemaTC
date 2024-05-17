@@ -11,7 +11,7 @@ using Permissions = SistemaTC.Core.General.Permissions;
 namespace SistemaTC.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class RequestController(ILogger<RequestController> logger, IMapper mapper, IRequestService requestService) : ControllerBase
+public class RequestController(ILogger<RequestController> logger, IMapper mapper, IRequestService requestService) : TCBaseController
 {
     [HttpGet("")]
     [PermissionAuthorization(Permissions.VIEW_REQUEST)]
@@ -71,8 +71,10 @@ public class RequestController(ILogger<RequestController> logger, IMapper mapper
         try
         {
             logger.LogInformation("Creating new request...");
+            var requestData = mapper.Map<Data.Entities.Request>(request);
+            requestData.CreatedBy = LoggedInUser.UserName!;
 
-            var (entity, serviceValidationResult) = await requestService.AddAsync(mapper.Map<Data.Entities.Request>(request));
+            var (entity, serviceValidationResult) = await requestService.AddAsync(requestData);
 
             if (serviceValidationResult.Count is not 0)
                 return StatusCode((int)HttpStatusCode.UnprocessableContent, serviceValidationResult);
@@ -101,6 +103,7 @@ public class RequestController(ILogger<RequestController> logger, IMapper mapper
             logger.LogInformation("Processing new credit card request {RequestId}...", request.RequestId);
             var requestData = mapper.Map<Data.Entities.Request>(request);
             requestData.RequestId = requestId;
+            requestData.UpdatedBy = LoggedInUser.UserName!;
 
             var serviceValidationResult = await requestService.ValidateRequest(requestData).ToListAsync();
 
