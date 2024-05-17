@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 
 namespace SistemaTC.DTO.CreditCard
 {
-    internal class NewCreditCard
+    internal class CreditCardFechaCorte
     {
-
-
     }
 }

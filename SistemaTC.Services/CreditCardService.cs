@@ -3,7 +3,6 @@ using SistemaTC.Core;
 using SistemaTC.Data;
 using SistemaTC.Data.Entities;
 using SistemaTC.Services.Interfaces;
-using System.Runtime.InteropServices;
 
 namespace SistemaTC.Services;
 public class CreditCardService(ITCContext dbContext) : ICreditCardService
@@ -13,6 +12,20 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
         return await dbContext.CreditCards.ToListAsync();
     }
     public async Task<CreditCard?> GetCreditCardAsync(Guid creditCardId)
+    {
+        return await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCardId);
+    }
+    public async Task<CreditCard?> GetCreditCardSaldoAsync(Guid creditCardId)
+    {
+        var entity = await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCardId);
+
+        return await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCardId);
+    }
+    public async Task<CreditCard?> GetCreditCardFechaCorteAsync(Guid creditCardId)
+    {
+        return await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCardId);
+    }
+    public async Task<CreditCard?> GetCreditCardDetalleAsync(Guid creditCardId)
     {
         return await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCardId);
     }
@@ -46,8 +59,7 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
         creditCard.Expired = false;
         creditCard.Pin = (GenerarNumeroAleatorioTarjeta(1000, 9999)).Hash();
         creditCard.Ccv = GenerarNumeroAleatorioTarjeta(100, 999).Hash();
-        creditCard.CreditLimit = 5000;
-        creditCard.CreditAvailable = 5000;
+        creditCard.CreditAvailable = creditCard.CreditLimit;
         creditCard.ChargeRate = 36;
         creditCard.BalanceCutOffDay = (fechaActual.AddDays(15)).Day;
         creditCard.NextBalanceCutOffDate = fechaActual.AddDays(15).AddMonths(1);
@@ -63,7 +75,7 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
 
         return (creditCard, []);
     }
-    public async Task<(CreditCard? creditCard, List<string> validationErrors)> UpdateAsync(CreditCard creditCard)
+    public async Task<(CreditCard? creditCard, List<string> validationErrors)> UpdatePinAsync(CreditCard creditCard)
     {
         var validationErrors = await ValidateUser(creditCard, false).ToListAsync();
 
@@ -77,17 +89,56 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
         if (entity is null)
             return (null, ["Credit Card doesn't exist"]);
 
-
-        entity.Updated = creditCard.Updated;
-        entity.UpdatedBy = creditCard.UpdatedBy;
-
         if (!string.IsNullOrEmpty(creditCard.Pin))
             entity.Pin = creditCard.Pin;
+
+        await dbContext.SaveChangesAsync();
+
+        return (entity, []);
+    }
+
+    public async Task<(CreditCard? creditCard, List<string> validationErrors)> UpdateBloqueoAsync(CreditCard creditCard)
+    {
+        var validationErrors = await ValidateUser(creditCard, false).ToListAsync();
+
+        if (validationErrors.Count is not 0)
+        {
+            return (null, validationErrors);
+        }
+
+        var entity = await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCard.CreditCardId);
+
+        if (entity is null)
+            return (null, ["Credit Card doesn't exist"]);
 
         if (entity.Locked != creditCard.Locked)
         {
             entity.Locked = creditCard.Locked;
-            entity.LockedDate = creditCard.LockedDate;
+        }
+
+        await dbContext.SaveChangesAsync();
+
+        return (entity, []);
+    }
+    public async Task<(CreditCard? creditCard, List<string> validationErrors)> UpdateLimiteCreditoAsync(CreditCard creditCard)
+    {
+        var validationErrors = await ValidateUser(creditCard, false).ToListAsync();
+
+        if (validationErrors.Count is not 0)
+        {
+            return (null, validationErrors);
+        }
+
+        var entity = await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCard.CreditCardId);
+
+        if (entity is null)
+            return (null, ["Credit Card doesn't exist"]);
+
+        if (entity.CreditLimit != creditCard.CreditLimit)
+        {
+            decimal diferencia = (creditCard.CreditLimit - entity.CreditLimit);
+            entity.CreditLimit = creditCard.CreditLimit;
+            entity.CreditAvailable = creditCard.CreditAvailable + diferencia;
         }
 
         await dbContext.SaveChangesAsync();

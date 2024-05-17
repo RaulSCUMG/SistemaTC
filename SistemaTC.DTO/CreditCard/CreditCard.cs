@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace SistemaTC.DTO.CreditCard;
 
-namespace SistemaTC.DTO.CreditCard
+public class CreditCard : ExistingCreditCardPin
 {
-    internal class CreditCard
-    {
-    }
+    public DateTime Created { get; set; }
+    public string CreatedBy { get; set; } = string.Empty;
+    public DateTime? Updated { get; set; }
+    public string UpdatedBy { get; set; } = string.Empty;
 }
