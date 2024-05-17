@@ -15,23 +15,18 @@ public partial class AutoMapperProfile
     {
         CreateMap<Entity, NewDTO>()
             .ReverseMap()
-            .ForMember(dest => dest.Created, opt => opt.MapFrom(src => DateTime.UtcNow))
-            .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.User));
+            .ForMember(dest => dest.Created, opt => opt.MapFrom(src => DateTime.UtcNow));
         CreateMap<Entity, ExistingDTOPin>()
             .ReverseMap()
-            .ForMember(dest => dest.Updated, opt => opt.MapFrom(src => DateTime.UtcNow))
-            .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.User));
+            .ForMember(dest => dest.Updated, opt => opt.MapFrom(src => DateTime.UtcNow));
         CreateMap<Entity, ExistingDTOBloqueo>()
             .ReverseMap()
             .ForMember(dest => dest.Updated, opt => opt.MapFrom(src => DateTime.UtcNow))
-            .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.User))
             .ForMember(dest => dest.LockedDate, opt => opt.MapFrom(src => DateTime.UtcNow));
         CreateMap<Entity, ExistingDTOAumento>()
             .ReverseMap()
-            .ForMember(dest => dest.Updated, opt => opt.MapFrom(src => DateTime.UtcNow))
-            .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.User));
+            .ForMember(dest => dest.Updated, opt => opt.MapFrom(src => DateTime.UtcNow));
         CreateMap<Entity, EntityDTO>()
-            .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.UpdatedBy ?? src.CreatedBy))
             .ReverseMap();
     }
 }
