@@ -41,12 +41,13 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
         } while (true);
 
         DateOnly fechaActual = DateOnly.FromDateTime(DateTime.Today);
+        string valPin = (GenerarNumeroAleatorioTarjeta(1000, 9999));
+        string valCcv = GenerarNumeroAleatorioTarjeta(100, 999);
         creditCard.ExpirationDate = fechaActual.AddYears(2).AddMonths(6);
         creditCard.Expired = false;
-        creditCard.Pin = (GenerarNumeroAleatorioTarjeta(1000, 9999)).Hash();
-        creditCard.Ccv = GenerarNumeroAleatorioTarjeta(100, 999).Hash();
+        creditCard.Pin = valPin.Hash();
+        creditCard.Ccv = valCcv.Hash();
         creditCard.CreditAvailable = creditCard.CreditLimit;
-        creditCard.ChargeRate = 36;
         creditCard.BalanceCutOffDay = (fechaActual.AddDays(15)).Day;
         creditCard.NextBalanceCutOffDate = fechaActual.AddDays(15).AddMonths(1);
         creditCard.PaymentDay = (fechaActual.AddDays(10)).Day;
