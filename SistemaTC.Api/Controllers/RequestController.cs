@@ -82,4 +82,35 @@ public class RequestController(ILogger<RequestController> logger, IMapper mapper
             return StatusCode((int)HttpStatusCode.InternalServerError, message);
         }
     }
+
+    [HttpPut("{requestId}/NewCreditCard")]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Request))]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
+    [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
+    public async Task<ActionResult<Request?>> Add(Guid requestId, [FromBody] NewCreditCardRequest request)
+    {
+        try
+        {
+            logger.LogInformation("Creating new request...");
+            var requestData = mapper.Map<Data.Entities.Request>(request);
+            requestData.RequestId = requestId;
+
+            var serviceValidationResult = await requestService.ValidateRequest(requestData).ToListAsync();
+
+            if (serviceValidationResult.Count is not 0)
+                return StatusCode((int)HttpStatusCode.UnprocessableContent, serviceValidationResult);
+
+            var entity = await requestService.ProcessRequest(requestData);
+
+            var data = mapper.Map<Request>(entity);
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            var message = e.GetLastException();
+            logger.LogError("Error produced while creating the request. Error: {message}", message);
+            return StatusCode((int)HttpStatusCode.InternalServerError, message);
+        }
+    }
 }

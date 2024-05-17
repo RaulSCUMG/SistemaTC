@@ -18,7 +18,7 @@ public class RequestService(ITCContext dbContext) : IRequestService
 
     public async Task<(Request? request, List<string> validationErrors)> AddAsync(Request request)
     {
-        var validationErrors = ValidateRequest(request).ToList();
+        var validationErrors = await ValidateRequest(request).ToListAsync();
 
         if (validationErrors.Count is not 0)
         {
@@ -34,18 +34,38 @@ public class RequestService(ITCContext dbContext) : IRequestService
         return (request, []);
     }
 
-    private IEnumerable<string> ValidateRequest(Request request, bool newRequest = true)
+    public async Task<Request?> ProcessRequest(Request request)
+    {
+        var entity = await dbContext.Requests.FirstAsync(x => x.RequestId == request.RequestId);
+
+        entity.AssignedToUserId = request.RequestedByUserId;
+        entity.Approved = request.Approved;
+        entity.InternalNote = request.InternalNote;
+        entity.UpdatedBy = request.UpdatedBy;
+        entity.Updated = request.Updated;
+
+        await dbContext.SaveChangesAsync();
+
+        return request;
+    }
+
+    public async IAsyncEnumerable<string> ValidateRequest(Request request, bool newRequest = true)
     {
         if(newRequest)
         {
-            if (!dbContext.Users.Any(x => x.UserId == request.RequestedByUserId))
+            if (!await dbContext.Users.AnyAsync(x => x.UserId == request.RequestedByUserId))
             {
                 yield return "User doesn't exist";
             }
         }
         else
         {
-            if (!dbContext.Users.Any(x => x.UserId == request.AssignedToUserId))
+            if(!await dbContext.Requests.AnyAsync(x => x.RequestId == request.RequestId))
+            {
+                yield return "Request doesn't exist";
+            }
+
+            if (!await dbContext.Users.AnyAsync(x => x.UserId == request.AssignedToUserId))
             {
                 yield return "User doesn't exist";
             }
