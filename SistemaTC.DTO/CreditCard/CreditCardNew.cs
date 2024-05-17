@@ -9,5 +9,7 @@ public class CreditCardNew
     [Required]
     public decimal CreditLimit { get; set; }
     [Required]
+    public decimal ChargeRate { get; set; }
+    [Required]
     public string User { get; set; } = string.Empty;
 }
