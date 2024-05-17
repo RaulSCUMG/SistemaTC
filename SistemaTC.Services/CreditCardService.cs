@@ -15,20 +15,6 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
     {
         return await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCardId);
     }
-    public async Task<CreditCard?> GetCreditCardSaldoAsync(Guid creditCardId)
-    {
-        var entity = await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCardId);
-
-        return await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCardId);
-    }
-    public async Task<CreditCard?> GetCreditCardFechaCorteAsync(Guid creditCardId)
-    {
-        return await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCardId);
-    }
-    public async Task<CreditCard?> GetCreditCardDetalleAsync(Guid creditCardId)
-    {
-        return await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCardId);
-    }
     public async Task<(CreditCard? creditCard, List<string> validationErrors)> AddAsync(CreditCard creditCard)
     {
         List<string> validationErrors;
