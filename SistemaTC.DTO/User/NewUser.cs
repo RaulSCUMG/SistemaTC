@@ -24,6 +24,4 @@ public class NewUser
     [StringLength(General.User.PhoneLength)]
     [DataType(DataType.PhoneNumber)]
     public string Phone { get; set; } = string.Empty;
-    [Required]
-    public string User { get; set; } = string.Empty;
 }

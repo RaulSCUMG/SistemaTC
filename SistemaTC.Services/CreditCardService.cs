@@ -153,7 +153,7 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
 
     public static string GenerarNumeroTarjeta()
     {
-        Random random = new Random();
+        Random random = new();
         int[] cardNumber = new int[16];
 
         cardNumber[0] = random.Next(4, 5);
@@ -189,7 +189,7 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
 
     public static string GenerarNumeroAleatorioTarjeta(int min, int max)
     {
-        Random random = new Random();
+        Random random = new();
         int resultado = random.Next(min, max + 1);
         return resultado.ToString();
     }

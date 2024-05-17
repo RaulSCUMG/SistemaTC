@@ -45,7 +45,7 @@ public class TokenService(AppSettings appSettings, ILogger<TokenService> logger)
                 new(JwtRegisteredClaimNames.Sub, appSettings.JwtTokenSettings.JwtRegisteredClaimNamesSub),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
-                new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new(ClaimTypes.PrimarySid, user.UserId.ToString()),
                 new(ClaimTypes.Name, user.UserName),
                 new(ClaimTypes.Email, user.Email),
                 new(ClaimTypes.Role, user.RoleId.ToString())

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using SistemaTC.Api.Filters;
 using SistemaTC.Core.Extensions;
 using SistemaTC.DTO.CreditCard;
 using SistemaTC.DTO.User;
@@ -7,13 +8,15 @@ using SistemaTC.Services;
 using SistemaTC.Services.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using Permissions = SistemaTC.Core.General.Permissions;
 
 namespace SistemaTC.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class CreditCardController(ILogger<CreditCardController> logger, IMapper mapper, ICreditCardService creditCardService) : ControllerBase
+public class CreditCardController(ILogger<CreditCardController> logger, IMapper mapper, ICreditCardService creditCardService) : TCBaseController
 {
     [HttpGet("")]
+    [PermissionAuthorization(Permissions.VIEW_CREDIT_CARD)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(List<CreditCard>))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
     public async Task<ActionResult<List<CreditCard>>> GetTarjetas()
@@ -33,6 +36,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
     }
 
     [HttpGet("{creditCardId}")]
+    [PermissionAuthorization(Permissions.VIEW_CREDIT_CARD)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
@@ -59,6 +63,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
     }
 
     [HttpGet("{creditCardId}")]
+    [PermissionAuthorization(Permissions.VIEW_CREDIT_CARD_CUTOFF)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
@@ -94,6 +99,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
     }
 
     [HttpGet("{creditCardId}")]
+    [PermissionAuthorization(Permissions.VIEW_CREDIT_CARD)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
@@ -127,6 +133,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
     }
 
     [HttpGet("{creditCardId}")]
+    [PermissionAuthorization(Permissions.VIEW_CREDIT_CARD)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
@@ -165,6 +172,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
     }
 
     [HttpPost("")]
+    [PermissionAuthorization(Permissions.CREATE_CREDIT_CARD)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
     [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
@@ -174,8 +182,10 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         try
         {
             logger.LogInformation("Creating new Credit Card...");
+            var requestData = mapper.Map<Data.Entities.CreditCard>(creditCard);
+            requestData.CreatedBy = LoggedInUser.UserName!;
 
-            var (entity, serviceValidationResult) = await creditCardService.AddAsync(mapper.Map<Data.Entities.CreditCard>(creditCard));
+            var (entity, serviceValidationResult) = await creditCardService.AddAsync(requestData);
 
             if (serviceValidationResult.Count is not 0)
                 return StatusCode((int)HttpStatusCode.UnprocessableContent, serviceValidationResult);
@@ -192,6 +202,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
     }
 
     [HttpPut("")]
+    [PermissionAuthorization(Permissions.UPDATE_PIN_CREDIT_CARD)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
     [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
@@ -202,7 +213,10 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         {
             logger.LogInformation("Updating credit card pin {CreditCardId}...", creditCard.CreditCardId);
 
-            var (entity, serviceValidationResult) = await creditCardService.UpdatePinAsync(mapper.Map<Data.Entities.CreditCard>(creditCard));
+            var requestData = mapper.Map<Data.Entities.CreditCard>(creditCard);
+            requestData.UpdatedBy = LoggedInUser.UserName!;
+
+            var (entity, serviceValidationResult) = await creditCardService.UpdatePinAsync(requestData);
 
             if (serviceValidationResult.Count is not 0)
                 return StatusCode((int)HttpStatusCode.UnprocessableContent, serviceValidationResult);
@@ -219,6 +233,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
     }
 
     [HttpPut("")]
+    [PermissionAuthorization(Permissions.UPDATE_CREDIT_CARD)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
     [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
@@ -229,7 +244,10 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         {
             logger.LogInformation("Updating credit card block {CreditCardId}...", creditCard.CreditCardId);
 
-            var (entity, serviceValidationResult) = await creditCardService.UpdateBloqueoAsync(mapper.Map<Data.Entities.CreditCard>(creditCard));
+            var requestData = mapper.Map<Data.Entities.CreditCard>(creditCard);
+            requestData.UpdatedBy = LoggedInUser.UserName!;
+
+            var (entity, serviceValidationResult) = await creditCardService.UpdateBloqueoAsync(requestData);
 
             if (serviceValidationResult.Count is not 0)
                 return StatusCode((int)HttpStatusCode.UnprocessableContent, serviceValidationResult);
@@ -246,6 +264,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
     }
 
     [HttpPut("")]
+    [PermissionAuthorization(Permissions.UPDATE_CREDIT_CARD)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
     [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
@@ -256,7 +275,10 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         {
             logger.LogInformation("Updating increase credit limit {CreditCardId}...", creditCard.CreditCardId);
 
-            var (entity, serviceValidationResult) = await creditCardService.UpdateLimiteCreditoAsync(mapper.Map<Data.Entities.CreditCard>(creditCard));
+            var requestData = mapper.Map<Data.Entities.CreditCard>(creditCard);
+            requestData.UpdatedBy = LoggedInUser.UserName!;
+
+            var (entity, serviceValidationResult) = await creditCardService.UpdateLimiteCreditoAsync(requestData);
 
             if (serviceValidationResult.Count is not 0)
                 return StatusCode((int)HttpStatusCode.UnprocessableContent, serviceValidationResult);
