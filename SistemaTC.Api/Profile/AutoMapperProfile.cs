@@ -6,5 +6,6 @@ public partial class AutoMapperProfile : AutoMapper.Profile
     {
         AddUserMap();
         AddRoleMap();
+        AddRequestMap();
     }
 }

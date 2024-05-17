@@ -5,12 +5,52 @@ Accept: application/json
 
 ###
 
+POST {{SistemaTC.Api_HostAddress}}/Notification/mail
+Accept: application/json
+
+###
+
+GET {{SistemaTC.Api_HostAddress}}/Request
+Accept: application/json
+
+###
+
+GET {{SistemaTC.Api_HostAddress}}/Request/{requestId}
+Accept: application/json
+
+###
+
+POST {{SistemaTC.Api_HostAddress}}/Request
+Accept: application/json
+
+###
+
 GET {{SistemaTC.Api_HostAddress}}/User/
 Accept: application/json
 
 ###
 
-POST {{SistemaTC.Api_HostAddress}}/Notification/mail
+GET {{SistemaTC.Api_HostAddress}}/User/{userId}
+Accept: application/json
+
+###
+
+GET {{SistemaTC.Api_HostAddress}}/User/ByUserName
+Accept: application/json
+
+###
+
+POST {{SistemaTC.Api_HostAddress}}/User/
+Accept: application/json
+
+###
+
+PUT {{SistemaTC.Api_HostAddress}}/User/
+Accept: application/json
+
+###
+
+PATCH {{SistemaTC.Api_HostAddress}}/User/
 Accept: application/json
 
 ###

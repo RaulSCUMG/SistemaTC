@@ -135,7 +135,7 @@ public class TCContext(DbContextOptions options) : DbContext(options), ITCContex
             entity.AddAuditableFields();
             entity.HasKey(x => x.RequestId);
 
-            entity.Property(x => x.Number).IsRequired();
+            entity.Property(x => x.Number).ValueGeneratedOnAdd().IsRequired();
             entity.Property(x => x.Type).IsRequired();
             entity.Property(x => x.Note).IsRequired().IsUnicode();
             entity.Property(x => x.InternalNote).IsRequired().IsUnicode();

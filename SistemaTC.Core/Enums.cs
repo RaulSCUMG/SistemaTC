@@ -7,10 +7,6 @@ public static class Enums
     {
         [Description("Nueva Tarjeta de Crédito")]
         NewCreditCard,
-        [Description("Bloqueo de Tarjeta de Crédito")]
-        LockCreditCard,
-        [Description("Desbloqueo de Tarjeta de Crédito")]
-        UnlockCeditCard,
         [Description("Aumento de Límite en Tarjeta de Crédito")]
         IncreaseCreditCardLimit
     }
