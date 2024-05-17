@@ -9,14 +9,18 @@ public static class General
     public static class Roles
     {
         public const string Administrator = "admin";
+        public const string Client = "client";
     }
 
     public static readonly Dictionary<string, Guid> RolesList = new() {
-        { Roles.Administrator, Guid.Parse("e9f77193-3d01-4a99-aa01-6fc777d5a87a") }
+        { Roles.Administrator, Guid.Parse("e9f77193-3d01-4a99-aa01-6fc777d5a87a") },
+        { Roles.Client, Guid.Parse("47fc7698-01d7-463a-a3c7-5c405fc4b562") }
     };
 
     public static class Permissions
     {
+        public const string VIEW_ROLE = "VIEW_ROLE";
+
         public const string VIEW_USER = "VIEW_USER";
         public const string CREATE_USER = "CREATE_USER";
         public const string UPDATE_USER = "UPDATE_USER";
@@ -43,9 +47,13 @@ public static class General
         public const string CREATE_CREDIT_CARD_PAYMENT = "CREATE_CREDIT_CARD_PAYMENT";
 
         public const string VIEW_CREDIT_CARD_INFO_FROM_USER = "VIEW_CREDIT_CARD_INFO_FROM_USER";
+
+        public const string SEND_NOTIFICATION = "SEND_NOTIFICATION";
     }
 
     public static readonly Dictionary<string, Guid> PermissionsList = new() {
+        { Permissions.VIEW_ROLE, Guid.Parse("389df558-751c-40dc-9cbf-9e847eac886d") },
+
         { Permissions.VIEW_USER, Guid.Parse("56c83f0f-53e0-4328-9ea7-9787bbcbfd02") },
         { Permissions.CREATE_USER, Guid.Parse("ef127738-9162-4654-89fc-d201386397f0") },
         { Permissions.UPDATE_USER, Guid.Parse("f8072b82-b1b1-4f5c-9eae-f2e7d1bd2634") },
@@ -71,7 +79,9 @@ public static class General
         { Permissions.VIEW_CREDIT_CARD_PAYMENT, Guid.Parse("54978218-8f88-49e3-93fa-f7b4c2dd2c96") },
         { Permissions.CREATE_CREDIT_CARD_PAYMENT, Guid.Parse("c89fe7b5-bb41-44fd-a726-377095491585") },
 
-        { Permissions.VIEW_CREDIT_CARD_INFO_FROM_USER, Guid.Parse("16d64a71-9d53-4672-bd88-c9dbfd237172") }
+        { Permissions.VIEW_CREDIT_CARD_INFO_FROM_USER, Guid.Parse("16d64a71-9d53-4672-bd88-c9dbfd237172") },
+
+        { Permissions.SEND_NOTIFICATION, Guid.Parse("cf608b86-f8eb-4e75-b7c7-ecd6bde0da2b") }
     };
 
 

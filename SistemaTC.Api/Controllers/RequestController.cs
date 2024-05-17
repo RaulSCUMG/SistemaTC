@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using SistemaTC.Api.Filters;
 using SistemaTC.Core.Extensions;
 using SistemaTC.DTO.Request;
 using SistemaTC.Services.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using Permissions = SistemaTC.Core.General.Permissions;
 
 namespace SistemaTC.Api.Controllers;
 [Route("api/[controller]")]
@@ -12,6 +14,7 @@ namespace SistemaTC.Api.Controllers;
 public class RequestController(ILogger<RequestController> logger, IMapper mapper, IRequestService requestService) : ControllerBase
 {
     [HttpGet("")]
+    [PermissionAuthorization(Permissions.VIEW_REQUEST)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(List<Request>))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
     public async Task<ActionResult<List<Request>>> Get()
@@ -31,6 +34,7 @@ public class RequestController(ILogger<RequestController> logger, IMapper mapper
     }
 
     [HttpGet("{requestId}")]
+    [PermissionAuthorization(Permissions.VIEW_REQUEST)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Request))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
@@ -57,6 +61,7 @@ public class RequestController(ILogger<RequestController> logger, IMapper mapper
     }
 
     [HttpPost("")]
+    [PermissionAuthorization(Permissions.CREATE_REQUEST)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Request))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
     [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
@@ -84,15 +89,16 @@ public class RequestController(ILogger<RequestController> logger, IMapper mapper
     }
 
     [HttpPut("{requestId}/NewCreditCard")]
+    [PermissionAuthorization(Permissions.PROCESS_REQUEST)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Request))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
     [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
-    public async Task<ActionResult<Request?>> Add(Guid requestId, [FromBody] NewCreditCardRequest request)
+    public async Task<ActionResult<Request?>> ProcessCreditCardRequest(Guid requestId, [FromBody] NewCreditCardRequest request)
     {
         try
         {
-            logger.LogInformation("Creating new request...");
+            logger.LogInformation("Processing new credit card request {RequestId}...", request.RequestId);
             var requestData = mapper.Map<Data.Entities.Request>(request);
             requestData.RequestId = requestId;
 
@@ -109,7 +115,7 @@ public class RequestController(ILogger<RequestController> logger, IMapper mapper
         catch (Exception e)
         {
             var message = e.GetLastException();
-            logger.LogError("Error produced while creating the request. Error: {message}", message);
+            logger.LogError("Error produced while processing the new credit card request. Error: {message}", message);
             return StatusCode((int)HttpStatusCode.InternalServerError, message);
         }
     }

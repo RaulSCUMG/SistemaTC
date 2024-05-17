@@ -35,7 +35,7 @@ Accept: application/json
 
 ###
 
-GET {{SistemaTC.Api_HostAddress}}/User/ByUserName
+POST {{SistemaTC.Api_HostAddress}}/User/Login
 Accept: application/json
 
 ###
