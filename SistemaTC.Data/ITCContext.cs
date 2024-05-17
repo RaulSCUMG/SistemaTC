@@ -11,6 +11,7 @@ public interface ITCContext
     DbSet<Permission> Permissions { get; set; }
     DbSet<Request> Requests { get; set; }
     DbSet<Role> Roles { get; set; }
+    DbSet<RolePermission> RolePermissions { get; set; }
     DbSet<User> Users { get; set; }
     DbSet<UserToken> UserTokens { get; set; }
 

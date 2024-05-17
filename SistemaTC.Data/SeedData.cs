@@ -10,6 +10,18 @@ public static class SeedData
         {
             entity.HasData(
 
+            #region Role
+                    new
+                    {
+                        PermissionId = PermissionsList[Permissions.VIEW_ROLE],
+                        Code = Permissions.VIEW_ROLE,
+                        Name = "View Role",
+                        CreatedBy = SystemUser,
+                        Created = new DateTime(2024, 5, 17, 3, 23, 0)
+                    }
+                    #endregion Role
+                    ,
+
             #region User
                     new
                     {
@@ -196,6 +208,18 @@ public static class SeedData
                         Created = new DateTime(2024, 5, 14, 1, 24, 0)
                     }
                     #endregion Credit Card Cutoff
+                    ,
+
+            #region Send Notification
+                    new
+                    {
+                        PermissionId = PermissionsList[Permissions.SEND_NOTIFICATION],
+                        Code = Permissions.SEND_NOTIFICATION,
+                        Name = "Send Notification",
+                        CreatedBy = SystemUser,
+                        Created = new DateTime(2024, 5, 17, 3, 23, 0)
+                    }
+                    #endregion Send Notification
                 );
         });
 
@@ -209,6 +233,14 @@ public static class SeedData
                         Name = "Administrador",
                         CreatedBy = SystemUser,
                         Created = new DateTime(2024, 5, 11, 0, 36, 0)
+                    },
+                    new
+                    {
+                        RoleId = RolesList[Roles.Client],
+                        Code = Roles.Client,
+                        Name = "Cliente",
+                        CreatedBy = SystemUser,
+                        Created = new DateTime(2024, 5, 17, 3, 23, 0)
                     }
                 );
         });
@@ -216,7 +248,9 @@ public static class SeedData
         modelBuilder.Entity<Entities.RolePermission>(entity =>
         {
             entity.HasData(
-                    
+            #region Administrator
+                     new() { RoleId = RolesList[Roles.Administrator], PermissionId = PermissionsList[Permissions.VIEW_ROLE] },
+
                      new() { RoleId = RolesList[Roles.Administrator], PermissionId = PermissionsList[Permissions.VIEW_USER] },
                      new() { RoleId = RolesList[Roles.Administrator], PermissionId = PermissionsList[Permissions.CREATE_USER] },
                      new() { RoleId = RolesList[Roles.Administrator], PermissionId = PermissionsList[Permissions.UPDATE_USER] },
@@ -242,7 +276,28 @@ public static class SeedData
                      new() { RoleId = RolesList[Roles.Administrator], PermissionId = PermissionsList[Permissions.VIEW_CREDIT_CARD_PAYMENT] },
                      new() { RoleId = RolesList[Roles.Administrator], PermissionId = PermissionsList[Permissions.CREATE_CREDIT_CARD_PAYMENT] },
 
-                     new() { RoleId = RolesList[Roles.Administrator], PermissionId = PermissionsList[Permissions.VIEW_CREDIT_CARD_INFO_FROM_USER] }
+                     new() { RoleId = RolesList[Roles.Administrator], PermissionId = PermissionsList[Permissions.VIEW_CREDIT_CARD_INFO_FROM_USER] },
+
+                     new() { RoleId = RolesList[Roles.Administrator], PermissionId = PermissionsList[Permissions.SEND_NOTIFICATION] },
+                     #endregion Administrator
+
+                     #region Client
+                     new() { RoleId = RolesList[Roles.Client], PermissionId = PermissionsList[Permissions.VIEW_USER] },
+                     new() { RoleId = RolesList[Roles.Client], PermissionId = PermissionsList[Permissions.UPDATE_USER] },
+
+                     new() { RoleId = RolesList[Roles.Client], PermissionId = PermissionsList[Permissions.VIEW_CREDIT_CARD] },
+                     new() { RoleId = RolesList[Roles.Client], PermissionId = PermissionsList[Permissions.INACTIVATE_CREDIT_CARD] },
+                     new() { RoleId = RolesList[Roles.Client], PermissionId = PermissionsList[Permissions.UPDATE_PIN_CREDIT_CARD] },
+
+                     new() { RoleId = RolesList[Roles.Client], PermissionId = PermissionsList[Permissions.VIEW_REQUEST] },
+                     new() { RoleId = RolesList[Roles.Client], PermissionId = PermissionsList[Permissions.CREATE_REQUEST] },
+
+                     new() { RoleId = RolesList[Roles.Client], PermissionId = PermissionsList[Permissions.VIEW_CREDIT_CARD_CUTOFF] },
+
+                     new() { RoleId = RolesList[Roles.Client], PermissionId = PermissionsList[Permissions.VIEW_CREDIT_CARD_PAYMENT] },
+
+                     new() { RoleId = RolesList[Roles.Client], PermissionId = PermissionsList[Permissions.SEND_NOTIFICATION] }
+                     #endregion Client
                 );
         });
     }

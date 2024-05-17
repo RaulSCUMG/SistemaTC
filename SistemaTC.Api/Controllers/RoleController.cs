@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using SistemaTC.Api.Filters;
 using SistemaTC.Core.Extensions;
 using SistemaTC.DTO.Role;
 using SistemaTC.Services.Interfaces;
 using System.Net;
+using Permissions = SistemaTC.Core.General.Permissions;
 
 namespace SistemaTC.Api.Controllers;
 [Route("api/[controller]")]
@@ -11,6 +13,7 @@ namespace SistemaTC.Api.Controllers;
 public class RoleController(ILogger<RoleController> logger, IMapper mapper, IRoleService roleService) : ControllerBase
 {
     [HttpGet("")]
+    [PermissionAuthorization(Permissions.VIEW_USER)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(List<Role>))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
     public async Task<ActionResult<List<Role>>> Get()

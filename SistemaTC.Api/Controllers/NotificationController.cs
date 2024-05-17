@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SistemaTC.Api.Filters;
 using SistemaTC.Core.Extensions;
 using SistemaTC.DTO.Notification;
 using SistemaTC.Services.Interfaces;
 using System.Net;
+using static SistemaTC.Core.General;
 
 namespace SistemaTC.Api.Controllers;
 [Route("api/[controller]")]
@@ -10,6 +12,7 @@ namespace SistemaTC.Api.Controllers;
 public class NotificationController(ILogger<NotificationController> logger, INotificationService notificationService) : ControllerBase
 {
     [HttpPost("email")]
+    [PermissionAuthorization(Permissions.SEND_NOTIFICATION)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
     [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(string))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
