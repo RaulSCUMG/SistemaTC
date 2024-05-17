@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SistemaTC.Core;
+using SistemaTC.Core.Extensions;
 using SistemaTC.Data;
 using SistemaTC.Data.Entities;
 using SistemaTC.Services.Interfaces;
