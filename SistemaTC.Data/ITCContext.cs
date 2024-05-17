@@ -17,4 +17,5 @@ public interface ITCContext
     public int? GetCommandTimeout();
     public void SetCommandTimeout(int? timeout);
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+    int SaveChanges();
 }

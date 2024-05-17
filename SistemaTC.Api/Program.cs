@@ -16,6 +16,7 @@ builder.Services.AddDbContext<TCContext>(options => options.UseMySQL(appSettings
 
 // Add services to the container.
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUserService, UserService>();
 

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SistemaTC.Core;
+using SistemaTC.Core.Extensions;
 using SistemaTC.Data;
 using SistemaTC.Data.Entities;
 using SistemaTC.Services.Interfaces;
@@ -70,6 +70,22 @@ public class UserService(ITCContext dbContext) : IUserService
 
         if (!string.IsNullOrEmpty(user.Password))
             entity.Password = user.Password.Hash();
+
+        await dbContext.SaveChangesAsync();
+
+        return (entity, []);
+    }
+
+    public async Task<(User? user, List<string> validationErrors)> InactivateAsync(Guid userId, bool active, string requestedBy)
+    {
+        var entity = await dbContext.Users.FirstOrDefaultAsync(x => x.UserId == userId);
+
+        if (entity is null)
+            return (null, ["User doesn't exist"]);
+
+        entity.Active = active;
+        entity.Updated = DateTime.UtcNow;
+        entity.UpdatedBy = requestedBy;
 
         await dbContext.SaveChangesAsync();
 
