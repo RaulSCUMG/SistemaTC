@@ -58,7 +58,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
-    [HttpGet("{creditCardId}")]
+    [HttpGet("{creditCardId}/saldo")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
@@ -93,7 +93,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
-    [HttpGet("{creditCardId}")]
+    [HttpGet("{creditCardId}/fechaCorte")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
@@ -126,7 +126,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
-    [HttpGet("{creditCardId}")]
+    [HttpGet("{creditCardId}/TarjetaDetalle")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
@@ -191,7 +191,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
-    [HttpPut("")]
+    [HttpPut("pin")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
     [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
@@ -218,7 +218,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
-    [HttpPut("")]
+    [HttpPut("bloqueo")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
     [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
@@ -245,7 +245,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
-    [HttpPut("")]
+    [HttpPut("limiteCredito")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
     [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
