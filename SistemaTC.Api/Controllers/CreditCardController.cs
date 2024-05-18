@@ -62,7 +62,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
-    [HttpGet("{creditCardId}")]
+    [HttpGet("{creditCardId}/balance")]
     [PermissionAuthorization(Permissions.VIEW_CREDIT_CARD_CUTOFF)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
@@ -98,7 +98,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
-    [HttpGet("{creditCardId}")]
+    [HttpGet("{creditCardId}/cutoff")]
     [PermissionAuthorization(Permissions.VIEW_CREDIT_CARD)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
@@ -132,7 +132,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
-    [HttpGet("{creditCardId}")]
+    [HttpGet("{creditCardId}/detail")]
     [PermissionAuthorization(Permissions.VIEW_CREDIT_CARD)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
@@ -201,7 +201,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
-    [HttpPut("")]
+    [HttpPut("pin")]
     [PermissionAuthorization(Permissions.UPDATE_PIN_CREDIT_CARD)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
@@ -232,7 +232,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
-    [HttpPut("")]
+    [HttpPut("lock")]
     [PermissionAuthorization(Permissions.UPDATE_CREDIT_CARD)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
@@ -263,7 +263,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
-    [HttpPut("")]
+    [HttpPut("creditlimit")]
     [PermissionAuthorization(Permissions.UPDATE_CREDIT_CARD)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]

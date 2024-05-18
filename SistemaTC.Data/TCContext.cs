@@ -82,6 +82,7 @@ public class TCContext(DbContextOptions options) : DbContext(options), ITCContex
             entity.Property(x => x.TotalCredit).IsRequired().HasPrecision(General.MoneyPrecision, General.MoneyScale);
             entity.Property(x => x.TotalDebit).IsRequired().HasPrecision(General.MoneyPrecision, General.MoneyScale);
             entity.Property(x => x.TotalBalance).IsRequired().HasPrecision(General.MoneyPrecision, General.MoneyScale);
+            entity.Property(x => x.TotalCreditAvailable).IsRequired().HasPrecision(General.MoneyPrecision, General.MoneyScale);
             entity.Property(x => x.PayedAmount).IsRequired().HasPrecision(General.MoneyPrecision, General.MoneyScale);
             entity.Property(x => x.Payed).IsRequired().HasDefaultValue(false);
             entity.Property(x => x.Closed).IsRequired().HasDefaultValue(false);

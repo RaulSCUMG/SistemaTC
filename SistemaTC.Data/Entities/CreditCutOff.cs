@@ -11,6 +11,7 @@ public class CreditCutOff: Auditable
     public decimal TotalCredit { get; set; }
     public decimal TotalDebit { get; set; }
     public decimal TotalBalance { get; set; }
+    public decimal TotalCreditAvailable { get; set; }
     public decimal PayedAmount { get; set; } = 0M;
     public bool Payed { get; set; }
     public bool Closed { get; set; }

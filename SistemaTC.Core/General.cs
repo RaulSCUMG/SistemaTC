@@ -124,5 +124,7 @@ public static class General
     public static class CreditCutOff
     {
         public const int NameLength = 100;
+        public static readonly string NameTemplate = "Corte de Caja {date}";
+        public static readonly string ChargeRateTemplate = "Cargo intereses";
     }
 }
