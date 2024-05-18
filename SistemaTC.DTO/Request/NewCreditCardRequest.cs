@@ -4,8 +4,6 @@ namespace SistemaTC.DTO.Request;
 public class NewCreditCardRequest: UpdateRequest
 {
     [Required]
-    public Guid CreditCardId { get; set; }
-    [Required]
     [DataType(DataType.Currency)]
     public decimal CreditLimit { get; set; }
     [Required]

@@ -21,7 +21,7 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
         do
         {
             creditCard.Number = GenerarNumeroTarjeta();
-            validationErrors = await ValidateUser(creditCard).ToListAsync();
+            validationErrors = await ValidateCreditCard(creditCard).ToListAsync();
 
             if (validationErrors.Contains("Credit Card already exists"))
             {
@@ -64,7 +64,7 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
     }
     public async Task<(CreditCard? creditCard, List<string> validationErrors)> UpdatePinAsync(CreditCard creditCard)
     {
-        var validationErrors = await ValidateUser(creditCard, false).ToListAsync();
+        var validationErrors = await ValidateCreditCard(creditCard, false).ToListAsync();
 
         if (validationErrors.Count is not 0)
         {
@@ -86,7 +86,7 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
 
     public async Task<(CreditCard? creditCard, List<string> validationErrors)> UpdateBloqueoAsync(CreditCard creditCard)
     {
-        var validationErrors = await ValidateUser(creditCard, false).ToListAsync();
+        var validationErrors = await ValidateCreditCard(creditCard, false).ToListAsync();
 
         if (validationErrors.Count is not 0)
         {
@@ -109,7 +109,7 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
     }
     public async Task<(CreditCard? creditCard, List<string> validationErrors)> UpdateLimiteCreditoAsync(CreditCard creditCard)
     {
-        var validationErrors = await ValidateUser(creditCard, false).ToListAsync();
+        var validationErrors = await ValidateCreditCard(creditCard, false).ToListAsync();
 
         if (validationErrors.Count is not 0)
         {
@@ -133,7 +133,7 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
         return (entity, []);
     }
 
-    private async IAsyncEnumerable<string> ValidateUser(CreditCard creditCard, bool newCreditCard = true)
+    public async IAsyncEnumerable<string> ValidateCreditCard(CreditCard creditCard, bool newCreditCard = true)
     {
         var existingCreditCardCondition = dbContext.CreditCards.Where(x => x.Number == creditCard.Number);
 

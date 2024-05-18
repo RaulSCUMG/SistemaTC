@@ -9,4 +9,5 @@ public interface ICreditCardService
     Task<(CreditCard? creditCard, List<string> validationErrors)> UpdatePinAsync(CreditCard creditCard);
     Task<(CreditCard? creditCard, List<string> validationErrors)> UpdateBloqueoAsync(CreditCard creditCard);
     Task<(CreditCard? creditCard, List<string> validationErrors)> UpdateLimiteCreditoAsync(CreditCard creditCard);
+    IAsyncEnumerable<string> ValidateCreditCard(CreditCard creditCard, bool newCreditCard = true);
 }
