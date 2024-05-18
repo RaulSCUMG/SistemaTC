@@ -60,7 +60,7 @@ builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
-<<<<<<< HEAD
+builder.Services.AddScoped<ICreditCardService, CreditCardService>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 builder.Services.AddScoped<IAuthorizationHandler, PermissionRequirementHandler>();
 
@@ -103,9 +103,6 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(nameof(PermissionRequirement), policy =>
         policy.Requirements.Add(new PermissionRequirement(new List<string>() { })));
 });
-=======
-builder.Services.AddScoped<ICreditCardService, CreditCardService>();
->>>>>>> feature/128-Crear_Tarjeta_Credito
 
 
 var app = builder.Build();

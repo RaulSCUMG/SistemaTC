@@ -35,7 +35,7 @@ public class RequestService(ITCContext dbContext) : IRequestService
     {
         var entity = await dbContext.Requests.FirstAsync(x => x.RequestId == request.RequestId);
 
-        entity.AssignedToUserId = request.RequestedByUserId;
+        entity.AssignedToUserId = request.AssignedToUserId;
         entity.Approved = request.Approved;
         entity.InternalNote = request.InternalNote;
         entity.UpdatedBy = request.UpdatedBy;
@@ -43,7 +43,7 @@ public class RequestService(ITCContext dbContext) : IRequestService
 
         await dbContext.SaveChangesAsync();
 
-        return request;
+        return entity;
     }
 
     public async IAsyncEnumerable<string> ValidateRequest(Request request, bool newRequest = true)
