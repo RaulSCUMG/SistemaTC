@@ -75,6 +75,7 @@ public class CutoffService(TCContext dbContext, ILogger<CutoffService> logger): 
                     Name = General.CreditCutOff.NameTemplate.Replace("{date}", $"{currentDate:MMMM yyyy}"),
                     Year = (ushort)currentDate.Year,
                     Month = (ushort)currentDate.Month,
+                    Date = currentDate.Date,
                     TotalCredit = transactions.Where(x => x.Type == CreditCardTransactionType.Credit).Sum(x => x.Amount),
                     TotalDebit = transactions.Where(x => x.Type == CreditCardTransactionType.Debit).Sum(x => x.Amount),
                     Created = DateTime.UtcNow,

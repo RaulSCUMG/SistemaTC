@@ -79,6 +79,7 @@ public class TCContext(DbContextOptions options) : DbContext(options), ITCContex
             entity.Property(x => x.Name).IsRequired().HasMaxLength(General.CreditCutOff.NameLength).IsUnicode();
             entity.Property(x => x.Year).IsRequired();
             entity.Property(x => x.Month).IsRequired();
+            entity.Property(x => x.Date).IsRequired();
             entity.Property(x => x.TotalCredit).IsRequired().HasPrecision(General.MoneyPrecision, General.MoneyScale);
             entity.Property(x => x.TotalDebit).IsRequired().HasPrecision(General.MoneyPrecision, General.MoneyScale);
             entity.Property(x => x.TotalBalance).IsRequired().HasPrecision(General.MoneyPrecision, General.MoneyScale);

@@ -109,18 +109,20 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         try
         {
             logger.LogInformation("Getting credit card {creditCardId}...", creditCardId);
-            var data = mapper.Map<CreditCard>(await creditCardService.GetCreditCardAsync(creditCardId));
+            var creditCard = await creditCardService.GetCreditCardAsync(creditCardId);
 
-            if (data == null)
+            if (creditCard == null)
             {
                 return BadRequest("Credit Card not found");
             }
 
+            var lastCreditCutoff = await cutoffService.GetLastCreditCutoffAsync(creditCard.CreditCardId);
+
             var response = new CreditCardResponseFecha
             {
-                CreditCardId = data.CreditCardId,
-                PreviousBalanceCutOffDate = data.NextBalanceCutOffDate.AddMonths(-1),
-                NextBalanceCutOffDate = data.NextBalanceCutOffDate.AddMonths(1)
+                CreditCardId = creditCard.CreditCardId,
+                PreviousBalanceCutOffDate = lastCreditCutoff == null ? null : DateOnly.FromDateTime(lastCreditCutoff.Date),
+                NextBalanceCutOffDate = DateOnly.FromDateTime(creditCard.NextBalanceCutOffDate)
             };
 
             return Ok(response);

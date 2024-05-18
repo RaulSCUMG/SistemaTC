@@ -7,6 +7,7 @@ public class CreditCutoff
     public string Name { get; set; } = default!;
     public ushort Year { get; set; }
     public ushort Month { get; set; }
+    public DateTime Date { get; set; }
     public decimal TotalCredit { get; set; }
     public decimal TotalDebit { get; set; }
     public decimal TotalBalance { get; set; }
