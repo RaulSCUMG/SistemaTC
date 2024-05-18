@@ -40,7 +40,7 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
             break;
         } while (true);
 
-        DateOnly fechaActual = DateOnly.FromDateTime(DateTime.Today);
+        DateTime fechaActual = DateTime.Today;
         string valPin = (GenerarNumeroAleatorioTarjeta(1000, 9999));
         string valCcv = GenerarNumeroAleatorioTarjeta(100, 999);
         creditCard.ExpirationDate = fechaActual.AddYears(2).AddMonths(6);

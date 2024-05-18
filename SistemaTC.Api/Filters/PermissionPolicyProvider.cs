@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿#pragma warning disable CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 
 namespace SistemaTC.Api.Filters;
@@ -23,3 +24,4 @@ public class PermissionPolicyProvider : IAuthorizationPolicyProvider
         return Task.FromResult<AuthorizationPolicy>(null!);
     }
 }
+#pragma warning restore CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.

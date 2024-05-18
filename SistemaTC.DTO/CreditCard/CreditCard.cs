@@ -2,8 +2,8 @@
 
 public class CreditCard : ExistingCreditCardPin
 {
-    public DateOnly NextBalanceCutOffDate { get; set; }
-    public DateOnly NextPaymentDate { get; set; }
+    public DateTime NextBalanceCutOffDate { get; set; }
+    public DateTime NextPaymentDate { get; set; }
     public decimal CreditAvailable { get; set; }
     public decimal ChargeRate { get; set; }
     public DateTime Created { get; set; }

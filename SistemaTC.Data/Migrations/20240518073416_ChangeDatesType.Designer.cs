@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SistemaTC.Data;
 
@@ -10,9 +11,11 @@ using SistemaTC.Data;
 namespace SistemaTC.Data.Migrations
 {
     [DbContext(typeof(TCContext))]
-    partial class TCContextModelSnapshot : ModelSnapshot
+    [Migration("20240518073416_ChangeDatesType")]
+    partial class ChangeDatesType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -217,10 +220,6 @@ namespace SistemaTC.Data.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("TotalCredit")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalCreditAvailable")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
