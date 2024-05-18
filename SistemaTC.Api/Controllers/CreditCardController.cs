@@ -61,7 +61,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
-    [HttpGet("{creditCardId}/saldo")]
+    [HttpGet("{creditCardId}/Balance")]
     [PermissionAuthorization(Permissions.VIEW_CREDIT_CARD_CUTOFF)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
@@ -99,7 +99,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
-    [HttpGet("{creditCardId}/fechaCorte")]
+    [HttpGet("{creditCardId}/CutoffDate")]
     [PermissionAuthorization(Permissions.VIEW_CREDIT_CARD)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
@@ -135,7 +135,45 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
-    [HttpGet("{creditCardId}/TarjetaDetalle")]
+    [HttpGet("{creditCardId}/Statement/{year}/{month}")]
+    [PermissionAuthorization(Permissions.VIEW_CREDIT_CARD)]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
+    public async Task<ActionResult<CreditCard>> GetCreditCardStatement(Guid creditCardId, int year, int month)
+    {
+        try
+        {
+            logger.LogInformation("Getting credit card statement {creditCardId} for year {year} and month {month}...", creditCardId, year, month);
+            var statement = mapper.Map<CreditCardStatement>(await creditCardService.GetCreditCardAsync(creditCardId));
+
+            if (statement == null)
+            {
+                return BadRequest("Credit Card not found");
+            }
+
+            var creditCutoff = await cutoffService.GetCreditCutoffByDateAsync(statement.CreditCardId, year, month);
+
+            if(creditCutoff == null)
+            {
+                return Ok();
+            }
+
+            var transactions = mapper.Map<List<CreditCardStatementDetail>>(await creditCardService.GetCreditCardTransactionsAsync(creditCutoff.CreditCutOffId));
+            statement.Detail = transactions;
+            statement.Balance = creditCutoff.TotalBalance;
+
+            return Ok(statement);
+        }
+        catch (Exception e)
+        {
+            var message = e.GetLastException();
+            logger.LogError("Error produced on getting credit card statement {creditCardId} for year {year} and month {month}. Error: {message}", creditCardId, year, month, message);
+            return StatusCode((int)HttpStatusCode.InternalServerError, message);
+        }
+    }
+
+    [HttpGet("{creditCardId}/Detail")]
     [PermissionAuthorization(Permissions.VIEW_CREDIT_CARD)]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
@@ -145,23 +183,25 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         try
         {
             logger.LogInformation("Getting credit card {creditCardId}...", creditCardId);
-            var data = mapper.Map<CreditCard>(await creditCardService.GetCreditCardAsync(creditCardId));
+            var creditCard = await creditCardService.GetCreditCardAsync(creditCardId);
 
-            if (data == null)
+            if (creditCard == null)
             {
                 return BadRequest("Credit Card not found");
             }
 
+            var lastCreditCutoff = await cutoffService.GetLastCreditCutoffAsync(creditCard.CreditCardId);
+            var (totalCredit, totalDebit) = await creditCardService.GetCurrentCreditCardSumTransactionsAsync(creditCard.CreditCardId);
+
             var response = new CreditCardResponseDetalle
             {
-                CreditCardId = data.CreditCardId,
-                CreditAvailable = data.CreditAvailable,
-                NextPaymentDate = data.NextPaymentDate,
-                ChargeRate = data.ChargeRate,
-                NextBalanceCutOffDate = data.NextBalanceCutOffDate,
-                //En lo que se finaliza el controller de los cortes para recuperar esta informacion
-                CurrentBalance = 0,
-                BalanceAtCutOff = 0
+                CreditCardId = creditCard.CreditCardId,
+                CreditAvailable = creditCard.CreditAvailable,
+                NextPaymentDate = DateOnly.FromDateTime(creditCard.NextPaymentDate),
+                ChargeRate = creditCard.ChargeRate,
+                CurrentBalance = cutoffService.CalculateBalance(lastCreditCutoff?.TotalBalance ?? 0, totalCredit, totalDebit),
+                BalanceAtCutOff = lastCreditCutoff?.TotalBalance ?? 0,
+                NextBalanceCutOffDate = DateOnly.FromDateTime(creditCard.NextBalanceCutOffDate)
             };
 
             return Ok(response);

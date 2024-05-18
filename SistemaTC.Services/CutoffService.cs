@@ -25,6 +25,11 @@ public class CutoffService(TCContext dbContext, ILogger<CutoffService> logger): 
         return await dbContext.CreditCutOffs.FirstOrDefaultAsync(x => x.CreditCardId == creditCardId && !x.Closed);
     }
 
+    public async Task<CreditCutOff?> GetCreditCutoffByDateAsync(Guid creditCardId, int year, int month)
+    {
+        return await dbContext.CreditCutOffs.FirstOrDefaultAsync(x => x.CreditCardId == creditCardId && x.Year == year && x.Month == month);
+    }
+
     public async Task CreateCreditCardsCutOff(string user)
     {
         var success = true;

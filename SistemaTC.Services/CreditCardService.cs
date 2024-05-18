@@ -14,7 +14,9 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
     }
     public async Task<CreditCard?> GetCreditCardAsync(Guid creditCardId)
     {
-        return await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCardId);
+        return await dbContext.CreditCards
+            .Include(x => x.Owner)
+            .FirstOrDefaultAsync(x => x.CreditCardId == creditCardId);
     }
     public async Task<(decimal totalCredit, decimal totalDebit)> GetCurrentCreditCardSumTransactionsAsync(Guid creditCardId)
     {
@@ -25,6 +27,12 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
 
         return (transactions.Where(x => x.Type == CreditCardTransactionType.Credit).Sum(x => x.Amount),
             transactions.Where(x => x.Type == CreditCardTransactionType.Debit).Sum(x => x.Amount));
+    }
+    public async Task<List<CreditCardTransaction>> GetCreditCardTransactionsAsync(Guid creditCutOffId)
+    {
+        return await dbContext.CreditCardTransactions
+            .Where(x => x.CreditCutOffId == creditCutOffId)
+            .ToListAsync();
     }
     public async Task<(CreditCard? creditCard, List<string> validationErrors)> AddAsync(CreditCard creditCard)
     {
