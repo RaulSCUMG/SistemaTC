@@ -3,6 +3,7 @@ using SistemaTC.Core.Extensions;
 using SistemaTC.Data;
 using SistemaTC.Data.Entities;
 using SistemaTC.Services.Interfaces;
+using static SistemaTC.Core.Enums;
 
 namespace SistemaTC.Services;
 public class CreditCardService(ITCContext dbContext) : ICreditCardService
@@ -14,6 +15,16 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
     public async Task<CreditCard?> GetCreditCardAsync(Guid creditCardId)
     {
         return await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCardId);
+    }
+    public async Task<(decimal totalCredit, decimal totalDebit)> GetCurrentCreditCardSumTransactionsAsync(Guid creditCardId)
+    {
+        var transactions = await dbContext.CreditCardTransactions
+            .Where(x => x.CreditCardId == creditCardId
+                    && x.CreditCutOffId == null)
+            .ToListAsync();
+
+        return (transactions.Where(x => x.Type == CreditCardTransactionType.Credit).Sum(x => x.Amount),
+            transactions.Where(x => x.Type == CreditCardTransactionType.Debit).Sum(x => x.Amount));
     }
     public async Task<(CreditCard? creditCard, List<string> validationErrors)> AddAsync(CreditCard creditCard)
     {

@@ -20,6 +20,11 @@ public class CutoffService(TCContext dbContext, ILogger<CutoffService> logger): 
         return await dbContext.CreditCutOffs.FirstOrDefaultAsync(x => x.UserId == creditCutoffId);
     }
 
+    public async Task<CreditCutOff?> GetLastCreditCutoffAsync(Guid creditCardId)
+    {
+        return await dbContext.CreditCutOffs.FirstOrDefaultAsync(x => x.CreditCardId == creditCardId && !x.Closed);
+    }
+
     public async Task CreateCreditCardsCutOff(string user)
     {
         var success = true;
@@ -76,7 +81,7 @@ public class CutoffService(TCContext dbContext, ILogger<CutoffService> logger): 
                     CreatedBy = user
                 };
 
-                newCreditCutOff.TotalBalance = (lastCutoff?.TotalBalance ?? 0) + newCreditCutOff.TotalCredit - newCreditCutOff.TotalDebit;
+                newCreditCutOff.TotalBalance = CalculateBalance((lastCutoff?.TotalBalance ?? 0), newCreditCutOff.TotalCredit, newCreditCutOff.TotalDebit);
                 newCreditCutOff.TotalCreditAvailable = creditCard.CreditAvailable;
                 await dbContext.CreditCutOffs.AddAsync(newCreditCutOff);
 
@@ -103,5 +108,10 @@ public class CutoffService(TCContext dbContext, ILogger<CutoffService> logger): 
         {
             throw new Exception($"Some errors were produced during the process. Please contact your administrator. Transaction: {hashTransaction}");
         }
+    }
+
+    public decimal CalculateBalance(decimal lastBalance, decimal totalCredit, decimal totalDebit)
+    {
+        return lastBalance + totalCredit - totalDebit;
     }
 }

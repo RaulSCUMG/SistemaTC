@@ -12,7 +12,7 @@ using Permissions = SistemaTC.Core.General.Permissions;
 namespace SistemaTC.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class CreditCardController(ILogger<CreditCardController> logger, IMapper mapper, ICreditCardService creditCardService) : TCBaseController
+public class CreditCardController(ILogger<CreditCardController> logger, IMapper mapper, ICreditCardService creditCardService, ICutoffService cutoffService) : TCBaseController
 {
     [HttpGet("")]
     [PermissionAuthorization(Permissions.VIEW_CREDIT_CARD)]
@@ -71,20 +71,22 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         try
         {
             logger.LogInformation("Getting credit card {creditCardId}...", creditCardId);
-            var data = mapper.Map<CreditCard>(await creditCardService.GetCreditCardAsync(creditCardId));
+            var creditCard = await creditCardService.GetCreditCardAsync(creditCardId);
 
-            if (data == null)
+            if (creditCard == null)
             {
                 return BadRequest("Credit Card not found");
             }
 
+            var lastCreditCutoff = await cutoffService.GetLastCreditCutoffAsync(creditCard.CreditCardId);
+            var (totalCredit, totalDebit) = await creditCardService.GetCurrentCreditCardSumTransactionsAsync(creditCard.CreditCardId);
+
             var response = new CreditCardResponseSaldo
             {
-                CreditCardId = data.CreditCardId,
-                CreditAvailable = data.CreditAvailable,
-                //En lo que se finaliza el controller de los cortes para recuperar esta informacion
-                CurrentBalance = 0,
-                BalanceAtCutOff = 0
+                CreditCardId = creditCard.CreditCardId,
+                CreditAvailable = creditCard.CreditAvailable,
+                CurrentBalance = cutoffService.CalculateBalance(lastCreditCutoff?.TotalBalance ?? 0, totalCredit, totalDebit),
+                BalanceAtCutOff = lastCreditCutoff?.TotalBalance ?? 0
             };
 
             return Ok(response);

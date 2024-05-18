@@ -5,6 +5,7 @@ public interface ICreditCardService
 {
     Task<List<CreditCard>> GetCreditCardsAsync();
     Task<CreditCard?> GetCreditCardAsync(Guid creditCardId);
+    Task<(decimal totalCredit, decimal totalDebit)> GetCurrentCreditCardSumTransactionsAsync(Guid creditCardId);
     Task<(CreditCard? creditCard, List<string> validationErrors)> AddAsync(CreditCard creditCard);
     Task<(CreditCard? creditCard, List<string> validationErrors)> UpdatePinAsync(CreditCard creditCard);
     Task<(CreditCard? creditCard, List<string> validationErrors)> UpdateBloqueoAsync(CreditCard creditCard);
