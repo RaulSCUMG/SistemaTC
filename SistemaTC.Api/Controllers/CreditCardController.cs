@@ -62,8 +62,12 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
+<<<<<<< HEAD
     [HttpGet("{creditCardId}")]
     [PermissionAuthorization(Permissions.VIEW_CREDIT_CARD_CUTOFF)]
+=======
+    [HttpGet("{creditCardId}/saldo")]
+>>>>>>> feature/128-Crear_Tarjeta_Credito
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
@@ -98,8 +102,12 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
+<<<<<<< HEAD
     [HttpGet("{creditCardId}")]
     [PermissionAuthorization(Permissions.VIEW_CREDIT_CARD)]
+=======
+    [HttpGet("{creditCardId}/fechaCorte")]
+>>>>>>> feature/128-Crear_Tarjeta_Credito
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
@@ -132,8 +140,12 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
+<<<<<<< HEAD
     [HttpGet("{creditCardId}")]
     [PermissionAuthorization(Permissions.VIEW_CREDIT_CARD)]
+=======
+    [HttpGet("{creditCardId}/TarjetaDetalle")]
+>>>>>>> feature/128-Crear_Tarjeta_Credito
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(string))]
@@ -201,8 +213,12 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
+<<<<<<< HEAD
     [HttpPut("")]
     [PermissionAuthorization(Permissions.UPDATE_PIN_CREDIT_CARD)]
+=======
+    [HttpPut("pin")]
+>>>>>>> feature/128-Crear_Tarjeta_Credito
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
     [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
@@ -232,8 +248,12 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
+<<<<<<< HEAD
     [HttpPut("")]
     [PermissionAuthorization(Permissions.UPDATE_CREDIT_CARD)]
+=======
+    [HttpPut("bloqueo")]
+>>>>>>> feature/128-Crear_Tarjeta_Credito
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
     [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
@@ -263,8 +283,12 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
         }
     }
 
+<<<<<<< HEAD
     [HttpPut("")]
     [PermissionAuthorization(Permissions.UPDATE_CREDIT_CARD)]
+=======
+    [HttpPut("limiteCredito")]
+>>>>>>> feature/128-Crear_Tarjeta_Credito
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CreditCard))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
     [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
