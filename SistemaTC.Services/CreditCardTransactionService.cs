@@ -34,10 +34,13 @@ public class CreditCardTransactionService(TCContext dbContext, ILogger<CutoffSer
         {
             try
             {
+                transaction.Type = CreditCardTransactionType.Debit;
+
+                // Guardar los cambios en la tarjeta de crédito
                 await dbContext.CreditCardTransactions.AddAsync(transaction);
                 await dbContext.SaveChangesAsync();
 
-                // Guardar los cambios en la tarjeta de crédito
+                //Procedo a modificar el disponible
                 var creditCard = await dbContext.CreditCards
                                                  .FirstOrDefaultAsync(x => x.CreditCardId == transaction.CreditCardId);
 
