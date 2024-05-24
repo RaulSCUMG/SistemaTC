@@ -24,6 +24,7 @@ public class CreditCardTransactionService(TCContext dbContext, ILogger<CutoffSer
     {
         var hashTransaction = GetHashCode();
         var validationErrors = await ValidateTransaction(transaction).ToListAsync();
+        var currentDate = DateTime.Now;
 
         if (validationErrors.Count is not 0)
         {
@@ -34,20 +35,56 @@ public class CreditCardTransactionService(TCContext dbContext, ILogger<CutoffSer
         {
             try
             {
-                transaction.Type = CreditCardTransactionType.Debit;
-
                 // Guardar los cambios en la tarjeta de crédito
                 await dbContext.CreditCardTransactions.AddAsync(transaction);
                 await dbContext.SaveChangesAsync();
 
                 //Procedo a modificar el disponible
-                var creditCard = await dbContext.CreditCards
-                                                 .FirstOrDefaultAsync(x => x.CreditCardId == transaction.CreditCardId);
+                var creditCardInfo = await dbContext.CreditCards
+                                                    .FirstOrDefaultAsync(x => x.CreditCardId == transaction.CreditCardId);
+                if (creditCardInfo != null)
+                {
+                    if (transaction.Type == CreditCardTransactionType.Credit) //Consumo
+                    {
+                        creditCardInfo.CreditAvailable -= transaction.Amount;
+                    }
+                    else
+                    {
+                        if (transaction.Type == CreditCardTransactionType.Debit) //Pago
+                        {
+                            creditCardInfo.CreditAvailable += transaction.Amount;
+                        }
+                    }
+                    dbContext.CreditCards.Update(creditCardInfo);
+                    await dbContext.SaveChangesAsync();
+                }
+                else {
+                    throw new Exception($"Credit card with ID {transaction.CreditCardId} not found.");
+                }
 
-                creditCard.CreditAvailable -= transaction.Amount;
-
-                dbContext.CreditCards.Update(creditCard);
-                await dbContext.SaveChangesAsync();
+                //Modificar el disponible del corte
+                if (transaction.CreditCutOffId != null)
+                {
+                    var cutOffInfo = await dbContext.CreditCutOffs
+                                                    .FirstOrDefaultAsync(x => x.CreditCardId == transaction.CreditCutOffId);
+                    if (cutOffInfo != null)
+                    {
+                        if (transaction.Type == CreditCardTransactionType.Debit) //
+                        {
+                            cutOffInfo.PayedAmount += transaction.Amount;
+                        }
+                        dbContext.CreditCutOffs.Update(cutOffInfo);
+                        await dbContext.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        throw new Exception($"Credit card CutOff with ID {currentDate.Year} - {currentDate.Month} not found.");
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Credit card with ID {transaction.CreditCardId} not found.");
+                }
 
                 await transactionScope.CommitAsync();
 
@@ -93,6 +130,10 @@ public class CreditCardTransactionService(TCContext dbContext, ILogger<CutoffSer
             if (totalDisponible < 0)
             {
                 yield return "Insufficient balance";
+            }
+            if (transaction.CreditCutOffId == null)
+            {
+                yield return "Credit cut off not exist";
             }
         }
     }

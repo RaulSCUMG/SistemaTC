@@ -6,10 +6,12 @@ using SistemaTC.Services.Interfaces;
 using static SistemaTC.Core.Enums;
 
 using Microsoft.Extensions.Logging;
+using System.IO.Pipes;
 
 namespace SistemaTC.Services;
 public class PaymentService(TCContext dbContext, ILogger<CutoffService> logger) : IPaymentService
 {
+    private readonly CreditCardTransactionService ccTransactionService;
     public async Task<List<Payment>> GetPaymentsAsync()
     {
         return await dbContext.Payments.ToListAsync();
@@ -33,16 +35,28 @@ public class PaymentService(TCContext dbContext, ILogger<CutoffService> logger) 
             try
             {
                 // Guardar los cambios en la tarjeta de crédito
+
                 await dbContext.Payments.AddAsync(payment);
                 await dbContext.SaveChangesAsync();
 
-                //Procedo a modificar el disponible de la tarjeta de credito
-                var creditCard = await dbContext.CreditCards
-                                                 .FirstOrDefaultAsync(x => x.CreditCardId == payment.CreditCardId);
-                creditCard.CreditAvailable += payment.Amount;
+                // Crear una transacción de tarjeta de crédito basada en el pago
+                var creditCardTransaction = new CreditCardTransaction
+                {
+                    UserId = payment.UserId,
+                    CreditCardId = payment.CreditCardId,
+                    CreditCutOffId = payment.CreditCutOffId,
+                    Type = CreditCardTransactionType.Debit, // O tipo que necesites
+                    Description = "Pago Recibido",
+                    Amount = payment.Amount
+                };
 
-                dbContext.CreditCards.Update(creditCard);
-                await dbContext.SaveChangesAsync();
+                var (transaction, transactionValidationErrors) = await ccTransactionService.AddAsync(creditCardTransaction);
+
+                if (transactionValidationErrors.Count != 0)
+                {
+                    await paymentScope.RollbackAsync();
+                    return (null, transactionValidationErrors);
+                }
 
                 await paymentScope.CommitAsync();
 
