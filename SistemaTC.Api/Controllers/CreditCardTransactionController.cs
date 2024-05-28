@@ -12,7 +12,7 @@ using Permissions = SistemaTC.Core.General.Permissions;
 namespace SistemaTC.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class CreditCardTransactionController(ILogger<CreditCardController> logger, IMapper mapper, ICreditCardTransactionService transactionService) : TCBaseController
+public class CreditCardTransactionController(ILogger<CreditCardTransactionController> logger, IMapper mapper, ICreditCardTransactionService transactionService) : TCBaseController
 {
     [HttpGet("")]
     [PermissionAuthorization(Permissions.CREATE_CC_TRANSACTION)]

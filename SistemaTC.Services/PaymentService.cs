@@ -7,6 +7,7 @@ using static SistemaTC.Core.Enums;
 
 using Microsoft.Extensions.Logging;
 using System.IO.Pipes;
+using System.Runtime.CompilerServices;
 
 namespace SistemaTC.Services;
 public class PaymentService(TCContext dbContext, ILogger<CutoffService> logger) : IPaymentService
@@ -35,7 +36,20 @@ public class PaymentService(TCContext dbContext, ILogger<CutoffService> logger) 
             try
             {
                 // Guardar los cambios en la tarjeta de crédito
+                var cutOffInfo = await dbContext.CreditCutOffs
+                                                .FirstOrDefaultAsync(x => x.CreditCardId == payment.CreditCutOffId);
+                decimal balanceTotal = cutOffInfo.TotalBalance;
+                decimal payedAmount = cutOffInfo.PayedAmount + payment.Amount;
 
+                if (payedAmount >= balanceTotal)
+                {
+                    payment.Type = PaymentType.Cash;
+                }
+                else
+                {
+                    payment.Type = PaymentType.Partial;
+                }
+                
                 await dbContext.Payments.AddAsync(payment);
                 await dbContext.SaveChangesAsync();
 

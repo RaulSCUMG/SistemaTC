@@ -65,6 +65,7 @@ builder.Services.AddScoped<ICutoffService, CutoffService>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 builder.Services.AddScoped<IAuthorizationHandler, PermissionRequirementHandler>();
 builder.Services.AddScoped<ICreditCardTransactionService, CreditCardTransactionService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 builder.Services.AddControllers().AddJsonOptions(opt =>
 {
