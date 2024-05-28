@@ -34,6 +34,22 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
             .Where(x => x.CreditCutOffId == creditCutOffId)
             .ToListAsync();
     }
+    public async Task<List<CreditCardTransaction>> GetCreditCardAccountStatusAsync(DateTime creditCutOffDate, Guid creditCardId)
+    {
+        var cutOffMonth = creditCutOffDate.Month;
+        var cutOffYear = creditCutOffDate.Year;
+        
+        return await dbContext.CreditCardTransactions
+                                .Join(dbContext.CreditCutOffs,
+                                      transaction => transaction.CreditCutOffId,
+                                      cutOff => cutOff.CreditCutOffId,
+                                      (transaction, cutOff) => new { Transaction = transaction, CutOff = cutOff })
+                                .Where(joined => joined.CutOff.Month == cutOffMonth && 
+                                                 joined.CutOff.Year == cutOffYear &&
+                                                 joined.Transaction.CreditCardId == creditCardId)
+                                .Select(joined => joined.Transaction)
+                                .ToListAsync();
+    }
     public async Task<(CreditCard? creditCard, List<string> validationErrors)> AddAsync(CreditCard creditCard)
     {
         List<string> validationErrors;
