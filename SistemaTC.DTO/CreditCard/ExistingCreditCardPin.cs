@@ -2,7 +2,7 @@
 
 namespace SistemaTC.DTO.CreditCard;
 
-public class ExistingCreditCardPin : CreditCardNew
+public class ExistingCreditCardPin
 {
     [Required]
     public Guid CreditCardId { get; set; }

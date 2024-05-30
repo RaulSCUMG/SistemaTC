@@ -2,7 +2,7 @@
 
 namespace SistemaTC.DTO.CreditCard;
 
-public class ExistingCreditCardBloqueo : CreditCardNew
+public class ExistingCreditCardBloqueo
 {
     [Required]
     public Guid CreditCardId { get; set; }
