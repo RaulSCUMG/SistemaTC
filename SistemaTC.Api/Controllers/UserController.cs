@@ -63,7 +63,7 @@ public class UserController(ILogger<UserController> logger, IMapper mapper, IUse
     }
 
     [HttpPost("")]
-    [PermissionAuthorization(Permissions.CREATE_USER)]
+    [AllowAnonymous]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(User))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ICollection<ValidationResult>))]
     [ProducesResponseType((int)HttpStatusCode.UnprocessableContent, Type = typeof(List<string>))]
