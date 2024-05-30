@@ -80,8 +80,8 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
         string valCcv = GenerarNumeroAleatorioTarjeta(100, 999);
         creditCard.ExpirationDate = fechaActual.AddYears(2).AddMonths(6);
         creditCard.Expired = false;
-        creditCard.Pin = valPin.Hash();
-        creditCard.Ccv = valCcv.Hash();
+        creditCard.Pin = valPin;
+        creditCard.Ccv = valCcv;
         creditCard.CreditAvailable = creditCard.CreditLimit;
         creditCard.BalanceCutOffDay = (fechaActual.AddDays(15)).Day;
         creditCard.NextBalanceCutOffDate = fechaActual.AddDays(15).AddMonths(1);
