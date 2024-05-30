@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SistemaTC.Api.Filters;
+using SistemaTC.Core;
 using SistemaTC.Core.Extensions;
 using SistemaTC.DTO.Authentication;
 using SistemaTC.DTO.User;
@@ -75,7 +76,7 @@ public class UserController(ILogger<UserController> logger, IMapper mapper, IUse
             logger.LogInformation("Creating new user...");
 
             var requestData = mapper.Map<Data.Entities.User>(user);
-            requestData.CreatedBy = LoggedInUser.UserName!;
+            requestData.CreatedBy = LoggedInUser?.UserName ?? General.SystemUser;
 
             var (entity, serviceValidationResult) = await userService.AddAsync(requestData);
 
