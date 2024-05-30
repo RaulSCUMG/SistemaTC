@@ -137,6 +137,7 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
         {
             entity.Locked = creditCard.Locked;
         }
+        entity.LockedDate = creditCard.LockedDate;
 
         await dbContext.SaveChangesAsync();
 
@@ -160,7 +161,7 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
         {
             decimal diferencia = (creditCard.CreditLimit - entity.CreditLimit);
             entity.CreditLimit = creditCard.CreditLimit;
-            entity.CreditAvailable = creditCard.CreditAvailable + diferencia;
+            entity.CreditAvailable = entity.CreditAvailable + diferencia;
         }
 
         await dbContext.SaveChangesAsync();
@@ -180,7 +181,8 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
             yield return "Credit Card already exists";
         }
 
-        if (!await dbContext.Users.AnyAsync(x => x.UserId == creditCard.UserId))
+        var creditCardIfo = await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCard.CreditCardId);
+        if (!await dbContext.Users.AnyAsync(x => x.UserId == creditCardIfo.UserId))
         {
             yield return "User doesn't exist";
         }

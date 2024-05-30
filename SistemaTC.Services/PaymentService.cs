@@ -10,9 +10,8 @@ using System.IO.Pipes;
 using System.Runtime.CompilerServices;
 
 namespace SistemaTC.Services;
-public class PaymentService(TCContext dbContext, ILogger<CutoffService> logger) : IPaymentService
+public class PaymentService(TCContext dbContext, ILogger<CutoffService> logger, ICreditCardTransactionService ccTransactionService) : IPaymentService
 {
-    private readonly CreditCardTransactionService ccTransactionService;
     public async Task<List<Payment>> GetPaymentsAsync()
     {
         return await dbContext.Payments.ToListAsync();
@@ -31,61 +30,54 @@ public class PaymentService(TCContext dbContext, ILogger<CutoffService> logger) 
             return (null, validationErrors);
         }
 
-        using (var paymentScope = await dbContext.Database.BeginTransactionAsync())
+        try
         {
-            try
+            // Guardar los cambios en la tarjeta de crédito
+            var cutOffInfo = await dbContext.CreditCutOffs
+                                            .FirstOrDefaultAsync(x => x.CreditCutOffId == payment.CreditCutOffId);
+            decimal balanceTotal = cutOffInfo.TotalBalance;
+            decimal payedAmount = cutOffInfo.PayedAmount + payment.Amount;
+
+            if (payedAmount >= balanceTotal)
             {
-                // Guardar los cambios en la tarjeta de crédito
-                var cutOffInfo = await dbContext.CreditCutOffs
-                                                .FirstOrDefaultAsync(x => x.CreditCardId == payment.CreditCutOffId);
-                decimal balanceTotal = cutOffInfo.TotalBalance;
-                decimal payedAmount = cutOffInfo.PayedAmount + payment.Amount;
-
-                if (payedAmount >= balanceTotal)
-                {
-                    payment.Type = PaymentType.Cash;
-                }
-                else
-                {
-                    payment.Type = PaymentType.Partial;
-                }
-                
-                await dbContext.Payments.AddAsync(payment);
-                await dbContext.SaveChangesAsync();
-
-                // Crear una transacción de tarjeta de crédito basada en el pago
-                var creditCardTransaction = new CreditCardTransaction
-                {
-                    UserId = payment.UserId,
-                    CreditCardId = payment.CreditCardId,
-                    CreditCutOffId = payment.CreditCutOffId,
-                    Type = CreditCardTransactionType.Debit, // O tipo que necesites
-                    Description = "Pago Recibido",
-                    Amount = payment.Amount
-                };
-
-                var (transaction, transactionValidationErrors) = await ccTransactionService.AddAsync(creditCardTransaction);
-
-                if (transactionValidationErrors.Count != 0)
-                {
-                    await paymentScope.RollbackAsync();
-                    return (null, transactionValidationErrors);
-                }
-
-                await paymentScope.CommitAsync();
-
-                return (payment, []);
+                payment.Type = PaymentType.Cash;
             }
-            catch (Exception e)
+            else
             {
-                await paymentScope.RollbackAsync();
-                var errorMessage = e.GetLastException();
-                string msg = $"Error processing Credit Card Payment for credit card {payment.CreditCardId}. Transaction: {hashTransaction}. Error: {errorMessage}";
-                logger.LogError(msg);
-
-                validationErrors.Add(msg);
-                return (null, validationErrors);
+                payment.Type = PaymentType.Partial;
             }
+
+            await dbContext.Payments.AddAsync(payment);
+            await dbContext.SaveChangesAsync();
+
+            // Crear una transacción de tarjeta de crédito basada en el pago
+            var creditCardTransaction = new CreditCardTransaction
+            {
+                UserId = payment.UserId,
+                CreditCardId = payment.CreditCardId,
+                CreditCutOffId = payment.CreditCutOffId,
+                Type = CreditCardTransactionType.Debit, // O tipo que necesites
+                Description = "Pago Recibido",
+                Amount = payment.Amount
+            };
+
+            var (transaction, transactionValidationErrors) = await ccTransactionService.AddAsync(creditCardTransaction);
+
+            if (transactionValidationErrors.Count != 0)
+            {
+                return (null, transactionValidationErrors);
+            }
+
+            return (payment, []);
+        }
+        catch (Exception e)
+        {
+            var errorMessage = e.GetLastException();
+            string msg = $"Error processing Credit Card Payment for credit card {payment.CreditCardId}. Transaction: {hashTransaction}. Error: {errorMessage}";
+            logger.LogError(msg);
+
+            validationErrors.Add(msg);
+            return (null, validationErrors);
         }
     }
     public async IAsyncEnumerable<string> ValidatePayment(Payment payment, bool newPayment = true)

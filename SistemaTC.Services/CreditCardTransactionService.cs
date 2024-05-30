@@ -35,6 +35,9 @@ public class CreditCardTransactionService(TCContext dbContext, ILogger<CutoffSer
         {
             try
             {
+                Guid? creditCutOffId = transaction.CreditCutOffId;
+                transaction.CreditCutOffId = null;
+
                 // Guardar los cambios en la tarjeta de crédito
                 await dbContext.CreditCardTransactions.AddAsync(transaction);
                 await dbContext.SaveChangesAsync();
@@ -63,27 +66,23 @@ public class CreditCardTransactionService(TCContext dbContext, ILogger<CutoffSer
                 }
 
                 //Modificar el disponible del corte
-                if (transaction.CreditCutOffId != null)
+                if (transaction.Type == CreditCardTransactionType.Debit)
                 {
-                    var cutOffInfo = await dbContext.CreditCutOffs
-                                                    .FirstOrDefaultAsync(x => x.CreditCardId == transaction.CreditCutOffId);
-                    if (cutOffInfo != null)
+                    if (creditCutOffId != null)
                     {
-                        if (transaction.Type == CreditCardTransactionType.Debit) //
+                        var cutOffInfo = await dbContext.CreditCutOffs
+                                                        .FirstOrDefaultAsync(x => x.CreditCutOffId == creditCutOffId);
+                        if (cutOffInfo != null)
                         {
                             cutOffInfo.PayedAmount += transaction.Amount;
+                            dbContext.CreditCutOffs.Update(cutOffInfo);
+                            await dbContext.SaveChangesAsync();
                         }
-                        dbContext.CreditCutOffs.Update(cutOffInfo);
-                        await dbContext.SaveChangesAsync();
+                        else
+                        {
+                            throw new Exception($"Credit card CutOff with ID {currentDate.Year} - {currentDate.Month} not found.");
+                        }
                     }
-                    else
-                    {
-                        throw new Exception($"Credit card CutOff with ID {currentDate.Year} - {currentDate.Month} not found.");
-                    }
-                }
-                else
-                {
-                    throw new Exception($"Credit card with ID {transaction.CreditCardId} not found.");
                 }
 
                 await transactionScope.CommitAsync();
@@ -130,10 +129,6 @@ public class CreditCardTransactionService(TCContext dbContext, ILogger<CutoffSer
             if (totalDisponible < 0)
             {
                 yield return "Insufficient balance";
-            }
-            if (transaction.CreditCutOffId == null)
-            {
-                yield return "Credit cut off not exist";
             }
         }
     }

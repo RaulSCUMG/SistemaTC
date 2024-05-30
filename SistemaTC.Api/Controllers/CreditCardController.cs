@@ -85,7 +85,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
             {
                 CreditCardId = creditCard.CreditCardId,
                 CreditAvailable = creditCard.CreditAvailable,
-                CurrentBalance = cutoffService.CalculateBalance(lastCreditCutoff?.TotalBalance ?? 0, totalCredit, totalDebit),
+                CurrentBalance = (lastCreditCutoff?.TotalBalance ?? 0) - (lastCreditCutoff?.PayedAmount ?? 0),
                 BalanceAtCutOff = lastCreditCutoff?.TotalBalance ?? 0
             };
 
@@ -199,7 +199,7 @@ public class CreditCardController(ILogger<CreditCardController> logger, IMapper 
                 CreditAvailable = creditCard.CreditAvailable,
                 NextPaymentDate = DateOnly.FromDateTime(creditCard.NextPaymentDate),
                 ChargeRate = creditCard.ChargeRate,
-                CurrentBalance = cutoffService.CalculateBalance(lastCreditCutoff?.TotalBalance ?? 0, totalCredit, totalDebit),
+                CurrentBalance = (lastCreditCutoff?.TotalBalance ?? 0) - (lastCreditCutoff?.PayedAmount ?? 0),
                 BalanceAtCutOff = lastCreditCutoff?.TotalBalance ?? 0,
                 NextBalanceCutOffDate = DateOnly.FromDateTime(creditCard.NextBalanceCutOffDate)
             };

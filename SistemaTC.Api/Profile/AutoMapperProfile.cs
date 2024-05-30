@@ -9,5 +9,7 @@ public partial class AutoMapperProfile : AutoMapper.Profile
         AddRequestMap();
         AddCreditCardMap();
         AddCreditCutoffMap();
+        AddCreditCardTransactionMap();
+        AddPaymentMap();
     }
 }
