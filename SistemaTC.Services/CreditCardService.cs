@@ -181,10 +181,13 @@ public class CreditCardService(ITCContext dbContext) : ICreditCardService
             yield return "Credit Card already exists";
         }
 
-        var creditCardIfo = await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCard.CreditCardId);
-        if (!await dbContext.Users.AnyAsync(x => x.UserId == creditCardIfo.UserId))
+        if (newCreditCard == false)
         {
-            yield return "User doesn't exist";
+            var creditCardIfo = await dbContext.CreditCards.FirstOrDefaultAsync(x => x.CreditCardId == creditCard.CreditCardId);
+            if (!await dbContext.Users.AnyAsync(x => x.UserId == creditCardIfo.UserId))
+            {
+                yield return "User doesn't exist";
+            }
         }
     }
 
